@@ -5,7 +5,7 @@ import "github.com/goccy/go-json"
 const LocateRequestEventType eventType = "locateReq"
 
 type LocateRequest struct {
-	TransactionId int `json:"-"`
+	TransactionId int
 }
 
 func (r *LocateRequest) MarshalJSON() ([]byte, error) {

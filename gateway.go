@@ -20,7 +20,7 @@ const (
 )
 
 type GetNetworkInfo struct {
-	TransactionId int `json:"-"`
+	TransactionId int
 }
 
 func (g *GetNetworkInfo) UnmarshalJSON(bytes []byte) error {

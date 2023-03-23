@@ -128,7 +128,7 @@ func (l *LockResponse) MarshalJSON() ([]byte, error) {
 }
 
 type LockClose struct {
-	TransactionId int `json:"-"`
+	TransactionId int
 }
 
 func (l *LockClose) UnmarshalJSON(bytes []byte) error {
@@ -200,7 +200,7 @@ func (l *LockOpen) MarshalJSON() ([]byte, error) {
 }
 
 type LockOffline struct {
-	TransactionId int `json:"-"`
+	TransactionId int
 }
 
 func (l *LockOffline) UnmarshalJSON(bytes []byte) error {

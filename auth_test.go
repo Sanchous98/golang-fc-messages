@@ -30,7 +30,7 @@ func FuzzAuthMarshal(f *testing.F) {
 			AuthType:      authType(aT),
 		}
 
-		res, err := json.MarshalWithOption(&value)
+		res, err := json.Marshal(&value)
 
 		if !strings.HasPrefix(value.HashKey, "0x") {
 			target := invalidHashKey(value.HashKey)
@@ -73,6 +73,66 @@ func FuzzAuthMarshal(f *testing.F) {
 	})
 }
 
-//func FuzzAuthUnmarshal(f *testing.F) {
-//	f.Fuzz(func(t *testing.T) {})
-//}
+func FuzzAuthUnmarshal(f *testing.F) {
+	hash := make([]byte, 8)
+
+	for _, aT := range [...]authType{NoneType, NFCType, QRType, MobileType, NumPadType} {
+		for _, aS := range [...]authStatus{NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus} {
+			_, _ = crypto.Read(hash)
+			f.Add(string(AuthEventType), rand.Int(), string(hash), rand.Int(), string(aT), string(aS))
+		}
+	}
+
+	f.Fuzz(func(t *testing.T, eT string, transactionId int, hashKey string, timestamp int, aT string, aS string) {
+		j := []byte(fmt.Sprintf(`{"event":{"%s":"authEvent","payload":{"hashKey":"%s","timestamp":%d,"authType":"%s","authStatus":"%s","channelIds":null},"transactionId":%d}}}`, eT, hashKey, timestamp, aT, aS, transactionId))
+		var value Auth
+
+		err := json.Unmarshal(j, &value)
+
+		if !strings.HasPrefix(hashKey, "0x") {
+			target := invalidHashKey(hashKey)
+			require.ErrorAs(t, err, &target)
+			return
+		}
+
+		if len(strings.TrimLeft(hashKey, "0x")) <= 0 || len(strings.TrimLeft(hashKey, "0x"))%2 != 0 {
+			target := invalidHashKey(hashKey)
+			require.ErrorAs(t, err, &target)
+			return
+		}
+
+		for _, letter := range strings.TrimLeft(hashKey, "0x") {
+			if !(letter >= '0' && letter <= '9' || letter >= 'a' && letter <= 'f' || letter >= 'A' && letter <= 'F') {
+				target := invalidHashKey(hashKey)
+				require.ErrorAs(t, err, &target)
+				return
+			}
+		}
+
+		switch authType(aT) {
+		case NoneType, NFCType, QRType, MobileType, NumPadType:
+		default:
+			target := invalidAuthType(authType(aT))
+			require.ErrorAs(t, err, &target)
+			return
+		}
+
+		switch authStatus(aS) {
+		case NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus:
+		default:
+			target := invalidAuthStatus(authStatus(aS))
+			require.ErrorAs(t, err, &target)
+			return
+		}
+
+		require.NoError(t, err)
+		assert.Equal(t, Auth{
+			TransactionId: transactionId,
+			HashKey:       hashKey,
+			Timestamp:     timestamp,
+			AuthType:      authType(aT),
+			AuthStatus:    authStatus(aS),
+			ChannelIds:    nil,
+		}, value)
+	})
+}

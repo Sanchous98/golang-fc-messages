@@ -17,7 +17,7 @@ const (
 )
 
 type DeviceStatusRequest struct {
-	TransactionId int `json:"-"`
+	TransactionId int
 }
 
 func (d *DeviceStatusRequest) UnmarshalJSON(bytes []byte) error {
