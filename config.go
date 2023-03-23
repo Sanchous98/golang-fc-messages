@@ -1,0 +1,189 @@
+package messages
+
+import "github.com/goccy/go-json"
+
+const (
+	DeviceConfigReadEvent     eventType = "deviceConfigRead"
+	DeviceConfigUpdateEvent   eventType = "deviceConfigUpdate"
+	DeviceConfigResponseEvent eventType = "deviceConfigResponse"
+)
+
+type UpdateConfig struct {
+	TransactionId           int      `json:"-"`
+	TxPower                 uint     `json:"txPower,omitempty"`
+	DeviceType              string   `json:"deviceType,omitempty"`
+	DeviceRole              string   `json:"deviceRole,omitempty"`
+	FrontBreakout           string   `json:"frontBreakout,omitempty"`
+	BackBreakout            string   `json:"backBreakout,omitempty"`
+	RecloseDelay            uint     `json:"recloseDelay,omitempty"`
+	StatusMsgFlags          uint     `json:"statusMsgFlags,omitempty"`
+	StatusUpdateInterval    uint16   `json:"statusUpdateInterval,omitempty"`
+	NfcEncryptionKey        [16]byte `json:"nfcEncryptionKey,omitempty"`
+	InstalledRelayModuleIds [16]uint `json:"installedRelayModuleIds,omitempty"`
+	ExternalRelayMode       string   `json:"externalRelayMode,omitempty"`
+	SlaveFwAddress          uint     `json:"slaveFwAddress,omitempty"`
+	BuzzerVolume            string   `json:"buzzerVolume,omitempty"`
+	EmvCoPrivateKey         [32]byte `json:"emvCoPrivateKey,omitempty"`
+	EmvCoKeyVersion         [4]byte  `json:"emvCoKeyVersion,omitempty"`
+	EmvCoCollectorId        [4]byte  `json:"emvCoCollectorId,omitempty"`
+	GoogleSmartTapEnabled   bool     `json:"googleSmartTapEnabled,omitempty"`
+}
+
+func (r *UpdateConfig) UnmarshalJSON(bytes []byte) error {
+	type updateConfig UpdateConfig
+
+	var e event
+	var err error
+
+	if err = json.Unmarshal(bytes, &e); err != nil {
+		return err
+	}
+
+	if e.EventType != DeviceConfigUpdateEvent {
+		return e.EventType.Error()
+	}
+
+	if err = json.Unmarshal(e.Payload, (*updateConfig)(r)); err != nil {
+		return err
+	}
+
+	r.TransactionId = e.TransactionId
+
+	return nil
+}
+
+func (r *UpdateConfig) MarshalJSON() ([]byte, error) {
+	type updateConfig UpdateConfig
+
+	var e event
+	var err error
+
+	e.TransactionId = r.TransactionId
+	e.EventType = DeviceConfigUpdateEvent
+
+	if e.Payload, err = json.Marshal((*updateConfig)(r)); err != nil {
+		return nil, err
+	}
+
+	return json.Marshal(&e)
+}
+
+type ConfigResponse struct {
+	TransactionId           int      `json:"-"`
+	TxPower                 uint     `json:"txPower,omitempty"`
+	DeviceType              string   `json:"deviceType,omitempty"`
+	DeviceRole              string   `json:"deviceRole,omitempty"`
+	FrontBreakout           string   `json:"frontBreakout,omitempty"`
+	BackBreakout            string   `json:"backBreakout,omitempty"`
+	RecloseDelay            uint     `json:"recloseDelay,omitempty"`
+	StatusMsgFlags          uint     `json:"statusMsgFlags,omitempty"`
+	StatusUpdateInterval    uint16   `json:"statusUpdateInterval,omitempty"`
+	NfcEncryptionKey        [16]byte `json:"nfcEncryptionKey,omitempty"`
+	InstalledRelayModuleIds [16]uint `json:"installedRelayModuleIds,omitempty"`
+	ExternalRelayMode       string   `json:"externalRelayMode,omitempty"`
+	SlaveFwAddress          uint     `json:"slaveFwAddress,omitempty"`
+	BuzzerVolume            string   `json:"buzzerVolume,omitempty"`
+	EmvCoPrivateKey         [32]byte `json:"emvCoPrivateKey,omitempty"`
+	EmvCoKeyVersion         [4]byte  `json:"emvCoKeyVersion,omitempty"`
+	EmvCoCollectorId        [4]byte  `json:"emvCoCollectorId,omitempty"`
+	GoogleSmartTapEnabled   bool     `json:"googleSmartTapEnabled,omitempty"`
+}
+
+func (r *ConfigResponse) UnmarshalJSON(bytes []byte) error {
+	type configResponse ConfigResponse
+
+	var e event
+	var err error
+
+	if err = json.Unmarshal(bytes, &e); err != nil {
+		return err
+	}
+
+	if e.EventType != DeviceConfigResponseEvent {
+		return e.EventType.Error()
+	}
+
+	if err = json.Unmarshal(e.Payload, (*configResponse)(r)); err != nil {
+		return err
+	}
+
+	r.TransactionId = e.TransactionId
+
+	return nil
+}
+
+func (r *ConfigResponse) MarshalJSON() ([]byte, error) {
+	type configResponse ConfigResponse
+
+	var e event
+	var err error
+
+	e.TransactionId = r.TransactionId
+	e.EventType = DeviceConfigResponseEvent
+
+	if e.Payload, err = json.Marshal((*configResponse)(r)); err != nil {
+		return nil, err
+	}
+
+	return json.Marshal(&e)
+}
+
+type ReadConfig struct {
+	TransactionId           int  `json:"-"`
+	TxPower                 bool `json:"txPower,omitempty"`
+	DeviceType              bool `json:"deviceType,omitempty"`
+	DeviceRole              bool `json:"deviceRole,omitempty"`
+	FrontBreakout           bool `json:"frontBreakout,omitempty"`
+	BackBreakout            bool `json:"backBreakout,omitempty"`
+	RecloseDelay            bool `json:"recloseDelay,omitempty"`
+	StatusMsgFlags          bool `json:"statusMsgFlags,omitempty"`
+	StatusUpdateInterval    bool `json:"statusUpdateInterval,omitempty"`
+	NfcEncryptionKey        bool `json:"nfcEncryptionKey,omitempty"`
+	InstalledRelayModuleIds bool `json:"installedRelayModuleIds,omitempty"`
+	ExternalRelayMode       bool `json:"externalRelayMode,omitempty"`
+	SlaveFwAddress          bool `json:"slaveFwAddress,omitempty"`
+	BuzzerVolume            bool `json:"buzzerVolume,omitempty"`
+	EmvCoPrivateKey         bool `json:"emvCoPrivateKey,omitempty"`
+	EmvCoKeyVersion         bool `json:"emvCoKeyVersion,omitempty"`
+	EmvCoCollectorId        bool `json:"emvCoCollectorId,omitempty"`
+	GoogleSmartTapEnabled   bool `json:"googleSmartTapEnabled,omitempty"`
+}
+
+func (r *ReadConfig) UnmarshalJSON(bytes []byte) error {
+	type readConfig ReadConfig
+
+	var e event
+	var err error
+
+	if err = json.Unmarshal(bytes, &e); err != nil {
+		return err
+	}
+
+	if e.EventType != DeviceConfigReadEvent {
+		return e.EventType.Error()
+	}
+
+	if err = json.Unmarshal(e.Payload, (*readConfig)(r)); err != nil {
+		return err
+	}
+
+	r.TransactionId = e.TransactionId
+
+	return nil
+}
+
+func (r *ReadConfig) MarshalJSON() ([]byte, error) {
+	type readConfig ReadConfig
+
+	var e event
+	var err error
+
+	e.TransactionId = r.TransactionId
+	e.EventType = DeviceConfigReadEvent
+
+	if e.Payload, err = json.Marshal((*readConfig)(r)); err != nil {
+		return nil, err
+	}
+
+	return json.Marshal(&e)
+}
