@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"bitbucket.org/4suites/golang-fc-messages/values"
 	"github.com/goccy/go-json"
 )
 
@@ -69,10 +70,10 @@ func (t *TransactionIdAction) MarshalJSON() ([]byte, error) {
 }
 
 type TransactionIdResponse struct {
-	ShortAddr           string `json:"-"`
-	ExtAddr             string `json:"-"`
-	Rssi                int    `json:"-"`
-	DeviceTransactionId int    `json:"deviceTransactionId"`
+	ShortAddr           string      `json:"-"`
+	ExtAddr             string      `json:"-"`
+	Rssi                values.RSSI `json:"-"`
+	DeviceTransactionId int         `json:"deviceTransactionId"`
 }
 
 func (t *TransactionIdResponse) UnmarshalJSON(bytes []byte) error {

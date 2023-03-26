@@ -1,14 +1,15 @@
 package messages
 
 import (
+	"bitbucket.org/4suites/golang-fc-messages/values"
 	crypto "crypto/rand"
 	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"math/rand"
-	"strings"
 	"testing"
+	"time"
 )
 
 func FuzzAuthMarshal(f *testing.F) {
@@ -21,35 +22,20 @@ func FuzzAuthMarshal(f *testing.F) {
 		}
 	}
 
-	f.Fuzz(func(t *testing.T, transactionId int, hashKey string, timestamp int, aT string, aS string) {
+	f.Fuzz(func(t *testing.T, transactionId int, hashKey string, timestamp int64, aT string, aS string) {
 		value := Auth{
 			TransactionId: transactionId,
-			HashKey:       hashKey,
-			Timestamp:     timestamp,
+			HashKey:       values.HashKey(hashKey),
+			Timestamp:     (values.Timestamp)(time.Unix(timestamp, 0)),
 			AuthStatus:    authStatus(aS),
 			AuthType:      authType(aT),
 		}
 
 		res, err := json.Marshal(&value)
 
-		if !strings.HasPrefix(value.HashKey, "0x") {
-			target := invalidHashKey(value.HashKey)
+		if target := (*values.HashKey)(&hashKey).Validate(); target != nil {
 			require.ErrorAs(t, err, &target)
 			return
-		}
-
-		if len(strings.TrimLeft(value.HashKey, "0x")) <= 0 || len(strings.TrimLeft(value.HashKey, "0x"))%2 != 0 {
-			target := invalidHashKey(value.HashKey)
-			require.ErrorAs(t, err, &target)
-			return
-		}
-
-		for _, letter := range strings.TrimLeft(value.HashKey, "0x") {
-			if !(letter >= '0' && letter <= '9' || letter >= 'a' && letter <= 'f' || letter >= 'A' && letter <= 'F') {
-				target := invalidHashKey(value.HashKey)
-				require.ErrorAs(t, err, &target)
-				return
-			}
 		}
 
 		switch value.AuthType {
@@ -83,30 +69,15 @@ func FuzzAuthUnmarshal(f *testing.F) {
 		}
 	}
 
-	f.Fuzz(func(t *testing.T, eT string, transactionId int, hashKey string, timestamp int, aT string, aS string) {
+	f.Fuzz(func(t *testing.T, eT string, transactionId int, hashKey string, timestamp int64, aT string, aS string) {
 		j := []byte(fmt.Sprintf(`{"event":{"%s":"authEvent","payload":{"hashKey":"%s","timestamp":%d,"authType":"%s","authStatus":"%s","channelIds":null},"transactionId":%d}}}`, eT, hashKey, timestamp, aT, aS, transactionId))
 		var value Auth
 
 		err := json.Unmarshal(j, &value)
 
-		if !strings.HasPrefix(hashKey, "0x") {
-			target := invalidHashKey(hashKey)
+		if target := (*values.HashKey)(&hashKey).Validate(); target != nil {
 			require.ErrorAs(t, err, &target)
 			return
-		}
-
-		if len(strings.TrimLeft(hashKey, "0x")) <= 0 || len(strings.TrimLeft(hashKey, "0x"))%2 != 0 {
-			target := invalidHashKey(hashKey)
-			require.ErrorAs(t, err, &target)
-			return
-		}
-
-		for _, letter := range strings.TrimLeft(hashKey, "0x") {
-			if !(letter >= '0' && letter <= '9' || letter >= 'a' && letter <= 'f' || letter >= 'A' && letter <= 'F') {
-				target := invalidHashKey(hashKey)
-				require.ErrorAs(t, err, &target)
-				return
-			}
 		}
 
 		switch authType(aT) {
@@ -128,8 +99,8 @@ func FuzzAuthUnmarshal(f *testing.F) {
 		require.NoError(t, err)
 		assert.Equal(t, Auth{
 			TransactionId: transactionId,
-			HashKey:       hashKey,
-			Timestamp:     timestamp,
+			HashKey:       values.HashKey(hashKey),
+			Timestamp:     (values.Timestamp)(time.Unix(timestamp, 0)),
 			AuthType:      authType(aT),
 			AuthStatus:    authStatus(aS),
 			ChannelIds:    nil,

@@ -4,10 +4,6 @@ import (
 	"fmt"
 )
 
-func invalidHashKey(hashKey string) error {
-	return fmt.Errorf(`invalid hashKey "%s"`, hashKey)
-}
-
 func invalidAuthStatus(got authStatus) error {
 	return fmt.Errorf("invalid authentication status %s! Expected %+q", got, [...]authStatus{
 		NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus,

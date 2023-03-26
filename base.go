@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"bitbucket.org/4suites/golang-fc-messages/values"
 	"errors"
 	"github.com/goccy/go-json"
 )
@@ -33,13 +34,13 @@ func (e *event) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	values, err := path.Extract(bytes)
+	extract, err := path.Extract(bytes)
 
 	if err != nil {
 		return err
 	}
 
-	if err = json.Unmarshal(values[0], (*ev)(e)); err != nil {
+	if err = json.Unmarshal(extract[0], (*ev)(e)); err != nil {
 		return err
 	}
 
@@ -49,7 +50,7 @@ func (e *event) UnmarshalJSON(bytes []byte) error {
 type response struct {
 	ShortAddr     string          `json:"short_addr"`
 	ExtAddr       string          `json:"ext_addr"`
-	Rssi          int             `json:"rssi"`
+	Rssi          values.RSSI     `json:"rssi"`
 	EventType     eventType       `json:"eventType"`
 	Payload       json.RawMessage `json:"payload"`
 	TransactionId int             `json:"transactionId"`
@@ -74,13 +75,13 @@ func (e *eventResponse) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	values, err := path.Extract(bytes)
+	extract, err := path.Extract(bytes)
 
 	if err != nil {
 		return err
 	}
 
-	if err = json.Unmarshal(values[0], (*response)(e)); err != nil {
+	if err = json.Unmarshal(extract[0], (*response)(e)); err != nil {
 		return err
 	}
 

@@ -1,9 +1,8 @@
 package messages
 
 import (
-	"encoding/hex"
+	"bitbucket.org/4suites/golang-fc-messages/values"
 	"github.com/goccy/go-json"
-	"strings"
 )
 
 type authStatus string
@@ -34,12 +33,12 @@ const (
 )
 
 type Auth struct {
-	TransactionId int        `json:"-"`
-	HashKey       string     `json:"hashKey"`
-	Timestamp     int        `json:"timestamp"`
-	AuthType      authType   `json:"authType"`
-	AuthStatus    authStatus `json:"authStatus"`
-	ChannelIds    []int      `json:"channelIds"`
+	TransactionId int              `json:"-"`
+	HashKey       values.HashKey   `json:"hashKey"`
+	Timestamp     values.Timestamp `json:"timestamp"`
+	AuthType      authType         `json:"authType"`
+	AuthStatus    authStatus       `json:"authStatus"`
+	ChannelIds    []int            `json:"channelIds"`
 }
 
 func (a *Auth) UnmarshalJSON(bytes []byte) error {
@@ -57,14 +56,6 @@ func (a *Auth) UnmarshalJSON(bytes []byte) error {
 
 	if err := json.Unmarshal(e.Payload, (*auth)(a)); err != nil {
 		return err
-	}
-
-	if !strings.HasPrefix(a.HashKey, "0x") {
-		return invalidHashKey(a.HashKey)
-	}
-
-	if _, err := hex.DecodeString(strings.TrimLeft(a.HashKey, "0x")); err != nil {
-		return invalidHashKey(a.HashKey)
 	}
 
 	switch a.AuthType {
@@ -100,18 +91,6 @@ func (a *Auth) MarshalJSON() ([]byte, error) {
 
 	var e event
 	var err error
-
-	if !strings.HasPrefix(a.HashKey, "0x") {
-		return nil, invalidHashKey(a.HashKey)
-	}
-
-	if strings.TrimLeft(a.HashKey, "0x") == "" {
-		return nil, invalidHashKey(a.HashKey)
-	}
-
-	if _, err = hex.DecodeString(strings.TrimLeft(a.HashKey, "0x")); err != nil {
-		return nil, invalidHashKey(a.HashKey)
-	}
 
 	e.TransactionId = a.TransactionId
 	e.EventType = AuthEventType
