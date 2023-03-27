@@ -39,6 +39,10 @@ func (e *event) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
+	if len(values) != 1 {
+		return nil
+	}
+
 	if err = json.Unmarshal(values[0], (*ev)(e)); err != nil {
 		return err
 	}
@@ -78,6 +82,10 @@ func (e *eventResponse) UnmarshalJSON(bytes []byte) error {
 
 	if err != nil {
 		return err
+	}
+
+	if len(values) != 1 {
+		return nil
 	}
 
 	if err = json.Unmarshal(values[0], (*response)(e)); err != nil {
