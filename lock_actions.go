@@ -22,7 +22,7 @@ const (
 	ErrorLockAlreadyClosedLockStatus lockStatus = "errorLockAlreadyClosed"
 	ErrorDriverEnabledLockStatus     lockStatus = "errorDriverEnabled"
 	DeviceTypeUnknownLockStatus      lockStatus = "deviceTypeUnknown"
-	OfflineTimeoutLockStatus         lockStatus = "openTimeoutError"
+	OpenTimeoutLockStatus            lockStatus = "openTimeoutError"
 )
 
 type lockStatus string
@@ -78,7 +78,7 @@ type LockResponse struct {
 }
 
 func (l *LockResponse) UnmarshalJSON(bytes []byte) error {
-	var e event
+	var e response
 
 	if err := json.Unmarshal(bytes, &e); err != nil {
 		return err
@@ -225,7 +225,7 @@ func (l *LockOffline) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	if status != OfflineTimeoutLockStatus {
+	if status != OpenTimeoutLockStatus {
 		return expectedOfflineTimeoutError(status)
 	}
 
@@ -239,7 +239,7 @@ func (l *LockOffline) MarshalJSON() ([]byte, error) {
 
 	e.EventType = LockOfflineResponseEventType
 	e.TransactionId = l.TransactionId
-	e.Payload, _ = json.Marshal(map[string]lockStatus{"lockActionStatus": OfflineTimeoutLockStatus})
+	e.Payload, _ = json.Marshal(map[string]lockStatus{"lockActionStatus": OpenTimeoutLockStatus})
 
 	return json.Marshal(&e)
 }
