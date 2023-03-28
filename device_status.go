@@ -46,15 +46,13 @@ func (d *DeviceStatusRequest) MarshalJSON() ([]byte, error) {
 }
 
 type DeviceStatusResponse struct {
-	TransactionId int                `json:"-"`
-	Reason        deviceStatusReason `json:"reason"`
-	Timezone      int                `json:"timezone"`
-	LockSensor    struct {
-		Raw     int `json:"raw"`
-		Privacy int `json:"privacy"`
-		Handle  int `json:"handle"`
-		Key     int `json:"key"`
-	} `json:"lockSensor"`
+	TransactionId    int                `json:"-"`
+	Reason           deviceStatusReason `json:"reason"`
+	Time             int                `json:"time"`
+	BatteryLevel     int                `json:"batteryLevel"`
+	BatteryLevelLoad int                `json:"batteryLevelLoad"`
+	NetworkState     int                `json:"networkState"`
+	AutoRequest      int                `json:"autoRequest"`
 }
 
 func (d *DeviceStatusResponse) UnmarshalJSON(bytes []byte) error {
