@@ -36,7 +36,7 @@ const (
 type Auth struct {
 	TransactionId int        `json:"-"`
 	HashKey       string     `json:"hashKey"`
-	Timestamp     int        `json:"timestamp"`
+	Timestamp     int64      `json:"timestamp"`
 	AuthType      authType   `json:"authType"`
 	AuthStatus    authStatus `json:"authStatus"`
 	ChannelIds    []int      `json:"channelIds"`

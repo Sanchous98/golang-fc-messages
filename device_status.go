@@ -48,7 +48,7 @@ func (d *DeviceStatusRequest) MarshalJSON() ([]byte, error) {
 type DeviceStatusResponse struct {
 	TransactionId    int                `json:"-"`
 	Reason           deviceStatusReason `json:"reason"`
-	Time             int                `json:"time"`
+	Time             int64              `json:"time"`
 	BatteryLevel     int                `json:"batteryLevel"`
 	BatteryLevelLoad int                `json:"batteryLevelLoad"`
 	NetworkState     int                `json:"networkState"`

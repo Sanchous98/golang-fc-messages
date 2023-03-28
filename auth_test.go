@@ -21,7 +21,7 @@ func FuzzAuthMarshal(f *testing.F) {
 		}
 	}
 
-	f.Fuzz(func(t *testing.T, transactionId int, hashKey string, timestamp int, aT string, aS string) {
+	f.Fuzz(func(t *testing.T, transactionId int, hashKey string, timestamp int64, aT string, aS string) {
 		value := Auth{
 			TransactionId: transactionId,
 			HashKey:       hashKey,
@@ -83,7 +83,7 @@ func FuzzAuthUnmarshal(f *testing.F) {
 		}
 	}
 
-	f.Fuzz(func(t *testing.T, eT string, transactionId int, hashKey string, timestamp int, aT string, aS string) {
+	f.Fuzz(func(t *testing.T, eT string, transactionId int, hashKey string, timestamp int64, aT string, aS string) {
 		j := []byte(fmt.Sprintf(`{"event":{"%s":"authEvent","payload":{"hashKey":"%s","timestamp":%d,"authType":"%s","authStatus":"%s","channelIds":null},"transactionId":%d}}}`, eT, hashKey, timestamp, aT, aS, transactionId))
 		var value Auth
 
