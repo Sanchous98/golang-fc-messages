@@ -5,7 +5,7 @@ import (
 )
 
 func invalidHashKey(hashKey string) error {
-	return fmt.Errorf(`invalid hashKey "%s"`, hashKey)
+	return fmt.Errorf(`invalid hashKey %q`, hashKey)
 }
 
 func invalidAuthStatus(got authStatus) error {

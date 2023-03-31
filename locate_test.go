@@ -23,7 +23,7 @@ func FuzzLocateUnmarshal(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, eT string, transactionId int) {
 		var e LocateRequest
-		value := []byte(fmt.Sprintf(`{"event":{"eventType":"%s","payload":{},"transactionId":%d}}`, eT, transactionId))
+		value := []byte(fmt.Sprintf(`{"event":{"eventType":%q,"payload":{},"transactionId":%d}}`, eT, transactionId))
 
 		err := json.Unmarshal(value, &e)
 

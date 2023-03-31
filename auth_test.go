@@ -17,7 +17,7 @@ func FuzzAuthMarshal(f *testing.F) {
 	for _, aT := range [...]authType{NoneType, NFCType, QRType, MobileType, NumPadType} {
 		for _, aS := range [...]authStatus{NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus} {
 			_, _ = crypto.Read(hash)
-			f.Add(rand.Int(), string(hash), rand.Int(), string(aT), string(aS))
+			f.Add(rand.Int(), string(hash), rand.Int63(), string(aT), string(aS))
 		}
 	}
 
@@ -69,7 +69,7 @@ func FuzzAuthMarshal(f *testing.F) {
 		}
 
 		require.NoError(t, err)
-		assert.Equal(t, []byte(fmt.Sprintf(`{"event":{"eventType":"authEvent","payload":{"hashKey":"%s","timestamp":%d,"authType":"%s","authStatus":"%s","channelIds":null},"transactionId":%d}}}`, hashKey, timestamp, aT, aS, transactionId)), res)
+		assert.Equal(t, []byte(fmt.Sprintf(`{"event":{"eventType":"authEvent","payload":{"hashKey":%q,"timestamp":%d,"authType":%q,"authStatus":%q,"channelIds":null},"transactionId":%d}}`, hashKey, timestamp, aT, aS, transactionId)), res)
 	})
 }
 
@@ -79,12 +79,12 @@ func FuzzAuthUnmarshal(f *testing.F) {
 	for _, aT := range [...]authType{NoneType, NFCType, QRType, MobileType, NumPadType} {
 		for _, aS := range [...]authStatus{NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus} {
 			_, _ = crypto.Read(hash)
-			f.Add(string(AuthEventType), rand.Int(), string(hash), rand.Int(), string(aT), string(aS))
+			f.Add(string(AuthEventType), rand.Int(), string(hash), rand.Int63(), string(aT), string(aS))
 		}
 	}
 
 	f.Fuzz(func(t *testing.T, eT string, transactionId int, hashKey string, timestamp int64, aT string, aS string) {
-		j := []byte(fmt.Sprintf(`{"event":{"%s":"authEvent","payload":{"hashKey":"%s","timestamp":%d,"authType":"%s","authStatus":"%s","channelIds":null},"transactionId":%d}}}`, eT, hashKey, timestamp, aT, aS, transactionId))
+		j := []byte(fmt.Sprintf(`{"event":{%q:"authEvent","payload":{"hashKey":%q,"timestamp":%d,"authType":%q,"authStatus":%q,"channelIds":null},"transactionId":%d}}}`, eT, hashKey, timestamp, aT, aS, transactionId))
 		var value Auth
 
 		err := json.Unmarshal(j, &value)

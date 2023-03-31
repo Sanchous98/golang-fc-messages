@@ -72,6 +72,9 @@ func (l *LockAuto) MarshalJSON() ([]byte, error) {
 }
 
 type LockResponse struct {
+	ShortAddr        string     `json:"-"`
+	ExtAddr          string     `json:"-"`
+	Rssi             int        `json:"-"`
 	TransactionId    int        `json:"-"`
 	LockActionStatus lockStatus `json:"lockActionStatus"`
 	ChannelIds       []int      `json:"channelIds,omitempty"`
@@ -101,6 +104,9 @@ func (l *LockResponse) UnmarshalJSON(bytes []byte) error {
 	}
 
 	l.TransactionId = e.TransactionId
+	l.ShortAddr = e.ShortAddr
+	l.ExtAddr = e.ExtAddr
+	l.Rssi = e.Rssi
 
 	return nil
 }

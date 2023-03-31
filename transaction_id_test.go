@@ -19,7 +19,7 @@ func FuzzTransactionIdActionMarshal(f *testing.F) {
 		switch value.Action {
 		case TransactionActionRead, TransactionActionReset:
 			require.NoError(t, err)
-			assert.Equal(t, []byte(fmt.Sprintf(`{"event":{"eventType":"transactionIdReq","payload":{"transactionIdAction":"%s"},"transactionId":0}}`, string(value.Action))), result)
+			assert.Equal(t, []byte(fmt.Sprintf(`{"event":{"eventType":"transactionIdReq","payload":{"transactionIdAction":%q},"transactionId":0}}`, string(value.Action))), result)
 		default:
 			target := invalidTransactionIdAction(value.Action)
 			require.ErrorAs(t, err, &target)
@@ -32,7 +32,7 @@ func FuzzTransactionIdActionUnmarshal(f *testing.F) {
 	f.Add(string(TransactionActionReset), string(TransactionIdReq))
 
 	f.Fuzz(func(t *testing.T, a string, eT string) {
-		value := []byte(fmt.Sprintf(`{"event":{"eventType":"%s","payload":{"transactionIdAction":"%s"},"transactionId":0}}`, eT, a))
+		value := []byte(fmt.Sprintf(`{"event":{"eventType":%q,"payload":{"transactionIdAction":%q},"transactionId":0}}`, eT, a))
 		var j TransactionIdAction
 		err := json.Unmarshal(value, &j)
 
@@ -67,7 +67,7 @@ func FuzzTransactionIdResponseUnmarshal(f *testing.F) {
 	f.Add(string(TransactionIdRsp), 0)
 
 	f.Fuzz(func(t *testing.T, eT string, deviceTransactionId int) {
-		value := []byte(fmt.Sprintf(`{"short_addr":"0x2","ext_addr":"0x124b001cbd4efa","rssi":-45,"eventType":"%s","payload":{"deviceTransactionId":%d},"transactionId":0}`, eT, deviceTransactionId))
+		value := []byte(fmt.Sprintf(`{"short_addr":"0x2","ext_addr":"0x124b001cbd4efa","rssi":-45,"eventType":%q,"payload":{"deviceTransactionId":%d},"transactionId":0}`, eT, deviceTransactionId))
 		var j TransactionIdResponse
 		err := json.Unmarshal(value, &j)
 

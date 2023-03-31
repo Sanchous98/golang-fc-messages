@@ -9,23 +9,23 @@ const (
 )
 
 type UpdateConfig struct {
-	TransactionId           int      `json:"-"`
-	TxPower                 uint     `json:"txPower,omitempty"`
-	DeviceType              string   `json:"deviceType,omitempty"`
-	DeviceRole              string   `json:"deviceRole,omitempty"`
-	FrontBreakout           string   `json:"frontBreakout,omitempty"`
-	BackBreakout            string   `json:"backBreakout,omitempty"`
+	TransactionId int    `json:"-"`
+	TxPower       uint   `json:"txPower,omitempty"`
+	DeviceType    string `json:"deviceType,omitempty"`
+	DeviceRole    string `json:"deviceRole,omitempty"`
+	//FrontBreakout           string   `json:"frontBreakout,omitempty"`
+	//BackBreakout            string   `json:"backBreakout,omitempty"`
 	RecloseDelay            uint     `json:"recloseDelay,omitempty"`
 	StatusMsgFlags          uint     `json:"statusMsgFlags,omitempty"`
 	StatusUpdateInterval    uint16   `json:"statusUpdateInterval,omitempty"`
-	NfcEncryptionKey        [16]byte `json:"nfcEncryptionKey,omitempty"`
+	NfcEncryptionKey        []byte   `json:"nfcEncryptionKey,omitempty"`
 	InstalledRelayModuleIds [16]uint `json:"installedRelayModuleIds,omitempty"`
 	ExternalRelayMode       string   `json:"externalRelayMode,omitempty"`
 	SlaveFwAddress          uint     `json:"slaveFwAddress,omitempty"`
 	BuzzerVolume            string   `json:"buzzerVolume,omitempty"`
-	EmvCoPrivateKey         [32]byte `json:"emvCoPrivateKey,omitempty"`
-	EmvCoKeyVersion         [4]byte  `json:"emvCoKeyVersion,omitempty"`
-	EmvCoCollectorId        [4]byte  `json:"emvCoCollectorId,omitempty"`
+	EmvCoPrivateKey         string   `json:"emvCoPrivateKey,omitempty"`
+	EmvCoKeyVersion         string   `json:"emvCoKeyVersion,omitempty"`
+	EmvCoCollectorId        string   `json:"emvCoCollectorId,omitempty"`
 	GoogleSmartTapEnabled   bool     `json:"googleSmartTapEnabled,omitempty"`
 }
 
@@ -69,24 +69,24 @@ func (r *UpdateConfig) MarshalJSON() ([]byte, error) {
 }
 
 type ConfigResponse struct {
-	TransactionId           int      `json:"-"`
-	TxPower                 uint     `json:"txPower,omitempty"`
-	DeviceType              string   `json:"deviceType,omitempty"`
-	DeviceRole              string   `json:"deviceRole,omitempty"`
-	FrontBreakout           string   `json:"frontBreakout,omitempty"`
-	BackBreakout            string   `json:"backBreakout,omitempty"`
-	RecloseDelay            uint     `json:"recloseDelay,omitempty"`
-	StatusMsgFlags          uint     `json:"statusMsgFlags,omitempty"`
-	StatusUpdateInterval    uint16   `json:"statusUpdateInterval,omitempty"`
-	NfcEncryptionKey        [16]byte `json:"nfcEncryptionKey,omitempty"`
+	TransactionId        int    `json:"-"`
+	TxPower              uint   `json:"txPower,omitempty"`
+	DeviceType           string `json:"deviceType,omitempty"`
+	DeviceRole           string `json:"deviceRole,omitempty"`
+	FrontBreakout        string `json:"frontBreakout,omitempty"`
+	BackBreakout         string `json:"backBreakout,omitempty"`
+	RecloseDelay         uint   `json:"recloseDelay,omitempty"`
+	StatusMsgFlags       uint   `json:"statusMsgFlags,omitempty"`
+	StatusUpdateInterval uint16 `json:"statusUpdateInterval,omitempty"`
+	//NfcEncryptionKey        [16]byte `json:"nfcEncryptionKey,omitempty"`
 	InstalledRelayModuleIds [16]uint `json:"installedRelayModuleIds,omitempty"`
 	ExternalRelayMode       string   `json:"externalRelayMode,omitempty"`
 	SlaveFwAddress          uint     `json:"slaveFwAddress,omitempty"`
 	BuzzerVolume            string   `json:"buzzerVolume,omitempty"`
-	EmvCoPrivateKey         [32]byte `json:"emvCoPrivateKey,omitempty"`
-	EmvCoKeyVersion         [4]byte  `json:"emvCoKeyVersion,omitempty"`
-	EmvCoCollectorId        [4]byte  `json:"emvCoCollectorId,omitempty"`
-	GoogleSmartTapEnabled   bool     `json:"googleSmartTapEnabled,omitempty"`
+	//EmvCoPrivateKey         string `json:"emvCoPrivateKey,omitempty"`
+	EmvCoKeyVersion       string `json:"emvCoKeyVersion,omitempty"`
+	EmvCoCollectorId      string `json:"emvCoCollectorId,omitempty"`
+	GoogleSmartTapEnabled bool   `json:"googleSmartTapEnabled,omitempty"`
 }
 
 func (r *ConfigResponse) UnmarshalJSON(bytes []byte) error {
