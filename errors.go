@@ -23,7 +23,7 @@ func invalidAuthType(got authType) error {
 
 func invalidDeviceStatusReason(got deviceStatusReason) error {
 	return fmt.Errorf("invalid device status reason %s! Expected %+q", string(got), [...]deviceStatusReason{
-		CloudRequestedReason, ScheduledUpdateReason,
+		CloudRequestedReason, ScheduledUpdateReason, StatusChangedReason,
 	})
 }
 
