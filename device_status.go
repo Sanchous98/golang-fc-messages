@@ -81,7 +81,7 @@ func (d *DeviceStatusResponse) UnmarshalJSON(bytes []byte) error {
 	switch d.Reason {
 	case NoneReason, CloudRequestedReason, ScheduledUpdateReason, StatusChangeReason, ErrorDetectedReason:
 	default:
-		return invalidDeviceStatusReason(d.Reason)
+		return InvalidDeviceStatusReason{d.Reason}
 	}
 
 	d.TransactionId = e.TransactionId
@@ -96,7 +96,7 @@ func (d *DeviceStatusResponse) MarshalJSON() ([]byte, error) {
 	switch d.Reason {
 	case NoneReason, CloudRequestedReason, ScheduledUpdateReason, StatusChangeReason, ErrorDetectedReason:
 	default:
-		return nil, invalidDeviceStatusReason(d.Reason)
+		return nil, &InvalidDeviceStatusReason{d.Reason}
 	}
 
 	type deviceStatusResponse DeviceStatusResponse

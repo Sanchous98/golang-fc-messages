@@ -41,7 +41,7 @@ func (t *TransactionIdAction) UnmarshalJSON(bytes []byte) error {
 	switch t.Action {
 	case TransactionActionRead, TransactionActionReset:
 	default:
-		return invalidTransactionIdAction(t.Action)
+		return InvalidTransactionIdAction{t.Action}
 	}
 
 	return nil
@@ -51,7 +51,7 @@ func (t *TransactionIdAction) MarshalJSON() ([]byte, error) {
 	switch t.Action {
 	case TransactionActionRead, TransactionActionReset:
 	default:
-		return nil, invalidTransactionIdAction(t.Action)
+		return nil, &InvalidTransactionIdAction{t.Action}
 	}
 
 	type tIdAction TransactionIdAction

@@ -95,7 +95,7 @@ func (u *UpdateNetworkState) UnmarshalJSON(bytes []byte) error {
 	switch u.Action {
 	case NetworkOpenAction, NetworkCloseAction:
 	default:
-		return invalidNetworkAction(u.Action)
+		return InvalidNetworkAction{u.Action}
 	}
 
 	u.TransactionId = e.TransactionId
@@ -107,7 +107,7 @@ func (u *UpdateNetworkState) MarshalJSON() ([]byte, error) {
 	switch u.Action {
 	case NetworkOpenAction, NetworkCloseAction:
 	default:
-		return nil, invalidNetworkAction(u.Action)
+		return nil, &InvalidNetworkAction{u.Action}
 	}
 
 	var e event

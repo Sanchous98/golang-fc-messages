@@ -21,8 +21,7 @@ func FuzzTransactionIdActionMarshal(f *testing.F) {
 			require.NoError(t, err)
 			assert.Equal(t, []byte(fmt.Sprintf(`{"event":{"eventType":"transactionIdReq","payload":{"transactionIdAction":%q},"transactionId":0}}`, string(value.Action))), result)
 		default:
-			target := invalidTransactionIdAction(value.Action)
-			require.ErrorAs(t, err, &target)
+			require.ErrorAs(t, err, new(InvalidTransactionIdAction))
 		}
 	})
 }
@@ -47,8 +46,7 @@ func FuzzTransactionIdActionUnmarshal(f *testing.F) {
 			require.NoError(t, err)
 			assert.Equal(t, j.Action, transactionIdAction(a))
 		default:
-			target := invalidTransactionIdAction(j.Action)
-			require.ErrorAs(t, err, &target)
+			require.ErrorAs(t, err, &InvalidTransactionIdAction{transactionIdAction(a)})
 		}
 	})
 }

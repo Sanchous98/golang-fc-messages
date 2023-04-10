@@ -33,8 +33,7 @@ func FuzzLockResponseUnmarshal(f *testing.F) {
 		case OpenTimeoutLockStatus:
 			fallthrough
 		default:
-			target := invalidLockStatus(lockStatus(lockActionStatus))
-			require.ErrorAs(t, err, &target)
+			require.ErrorAs(t, err, &InvalidLockStatus{lockStatus(lockActionStatus)})
 			return
 		}
 

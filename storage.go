@@ -67,7 +67,7 @@ func (s *StorageData) UnmarshalJSON(bytes []byte) error {
 	case StorageResponseStatusOk, StorageResponseStatusReadOk, StorageResponseStatusErrorKeyNotFound,
 		StorageResponseStatusErrorKeyAlreadyExists, StorageResponseStatusErrorFlashStorageFull, StorageResponseStatusErrorCritical:
 	default:
-		return invalidStorageResponseStatus(s.Status)
+		return InvalidStorageResponseStatus{s.Status}
 	}
 
 	return nil
@@ -78,7 +78,7 @@ func (s *StorageData) MarshalJSON() ([]byte, error) {
 	case StorageResponseStatusOk, StorageResponseStatusReadOk, StorageResponseStatusErrorKeyNotFound,
 		StorageResponseStatusErrorKeyAlreadyExists, StorageResponseStatusErrorFlashStorageFull, StorageResponseStatusErrorCritical:
 	default:
-		return nil, invalidStorageResponseStatus(s.Status)
+		return nil, &InvalidStorageResponseStatus{s.Status}
 	}
 
 	type storageData StorageData

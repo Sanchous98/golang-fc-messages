@@ -100,7 +100,7 @@ func (l *LockResponse) UnmarshalJSON(bytes []byte) error {
 	switch l.LockActionStatus {
 	case NoneLockStatus, ExtRelayStateLockStatus, LockOpenedLockStatus, LockClosedLockStatus, DriverOnLockStatus, ErrorLockAlreadyOpenLockStatus, ErrorLockAlreadyClosedLockStatus, ErrorDriverEnabledLockStatus, DeviceTypeUnknownLockStatus:
 	default:
-		return invalidLockStatus(l.LockActionStatus)
+		return InvalidLockStatus{l.LockActionStatus}
 	}
 
 	l.TransactionId = e.TransactionId
@@ -115,7 +115,7 @@ func (l *LockResponse) MarshalJSON() ([]byte, error) {
 	switch l.LockActionStatus {
 	case NoneLockStatus, ExtRelayStateLockStatus, LockOpenedLockStatus, LockClosedLockStatus, DriverOnLockStatus, ErrorLockAlreadyOpenLockStatus, ErrorLockAlreadyClosedLockStatus, ErrorDriverEnabledLockStatus, DeviceTypeUnknownLockStatus:
 	default:
-		return nil, invalidLockStatus(l.LockActionStatus)
+		return nil, &InvalidLockStatus{l.LockActionStatus}
 	}
 
 	type lockResponse LockResponse
@@ -232,7 +232,7 @@ func (l *LockOffline) UnmarshalJSON(bytes []byte) error {
 	}
 
 	if status != OpenTimeoutLockStatus {
-		return expectedOfflineTimeoutError(status)
+		return ExpectedOfflineTimeoutError{status}
 	}
 
 	l.TransactionId = e.TransactionId

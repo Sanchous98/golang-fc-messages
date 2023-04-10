@@ -172,7 +172,7 @@ func (f *FirmwareVersionUpgradeResponse) UnmarshalJSON(bytes []byte) error {
 	case UpgradeSuccessStatus, UpgradeDeviceNotFoundStatus, UpgradeInvalidStateStatus,
 		UpgradeInvalidFileStatus, UpgradeInvalidFileIdStatus, UpgradeUnknownErrorStatus:
 	default:
-		return invalidFirmwareUpgradeStatus(f.Status)
+		return InvalidFirmwareUpgradeStatus{f.Status}
 	}
 
 	f.Rssi = r.Rssi
@@ -188,7 +188,7 @@ func (f *FirmwareVersionUpgradeResponse) MarshalJSON() ([]byte, error) {
 	case UpgradeSuccessStatus, UpgradeDeviceNotFoundStatus, UpgradeInvalidStateStatus,
 		UpgradeInvalidFileStatus, UpgradeInvalidFileIdStatus, UpgradeUnknownErrorStatus:
 	default:
-		return nil, invalidFirmwareUpgradeStatus(f.Status)
+		return nil, &InvalidFirmwareUpgradeStatus{f.Status}
 	}
 
 	var r response

@@ -33,21 +33,18 @@ func FuzzAuthMarshal(f *testing.F) {
 		res, err := json.Marshal(&value)
 
 		if !strings.HasPrefix(value.HashKey, "0x") {
-			target := invalidHashKey(value.HashKey)
-			require.ErrorAs(t, err, &target)
+			require.ErrorAs(t, err, &InvalidHashKey{value.HashKey})
 			return
 		}
 
 		if len(strings.TrimLeft(value.HashKey, "0x")) <= 0 || len(strings.TrimLeft(value.HashKey, "0x"))%2 != 0 {
-			target := invalidHashKey(value.HashKey)
-			require.ErrorAs(t, err, &target)
+			require.ErrorAs(t, err, &InvalidHashKey{value.HashKey})
 			return
 		}
 
 		for _, letter := range strings.TrimLeft(value.HashKey, "0x") {
 			if !(letter >= '0' && letter <= '9' || letter >= 'a' && letter <= 'f' || letter >= 'A' && letter <= 'F') {
-				target := invalidHashKey(value.HashKey)
-				require.ErrorAs(t, err, &target)
+				require.ErrorAs(t, err, &InvalidHashKey{value.HashKey})
 				return
 			}
 		}
@@ -55,16 +52,14 @@ func FuzzAuthMarshal(f *testing.F) {
 		switch value.AuthType {
 		case NoneType, NFCType, QRType, MobileType, NumPadType:
 		default:
-			target := invalidAuthType(value.AuthType)
-			require.ErrorAs(t, err, &target)
+			require.ErrorAs(t, err, &InvalidAuthType{value.AuthType})
 			return
 		}
 
 		switch value.AuthStatus {
 		case NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus:
 		default:
-			target := invalidAuthStatus(value.AuthStatus)
-			require.ErrorAs(t, err, &target)
+			require.ErrorAs(t, err, &InvalidAuthType{value.AuthType})
 			return
 		}
 
@@ -74,61 +69,42 @@ func FuzzAuthMarshal(f *testing.F) {
 }
 
 func FuzzAuthUnmarshal(f *testing.F) {
-	hash := make([]byte, 8)
-
 	for _, aT := range [...]authType{NoneType, NFCType, QRType, MobileType, NumPadType} {
 		for _, aS := range [...]authStatus{NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus} {
-			_, _ = crypto.Read(hash)
-			f.Add(string(AuthEventType), rand.Int(), string(hash), rand.Int63(), string(aT), string(aS))
+			f.Add(string(AuthEventType), rand.Int(), rand.Int(), rand.Int63(), string(aT), string(aS))
 		}
 	}
 
-	f.Fuzz(func(t *testing.T, eT string, transactionId int, hashKey string, timestamp int64, aT string, aS string) {
-		j := []byte(fmt.Sprintf(`{"event":{%q:"authEvent","payload":{"hashKey":%q,"timestamp":%d,"authType":%q,"authStatus":%q,"channelIds":null},"transactionId":%d}}}`, eT, hashKey, timestamp, aT, aS, transactionId))
+	f.Fuzz(func(t *testing.T, eT string, transactionId, hashKey int, timestamp int64, aT string, aS string) {
+		j := []byte(fmt.Sprintf(`{"event":{"eventType":%q,"payload":{"hashKey":"%#x","timestamp":%d,"authType":%q,"authStatus":%q,"channelIds":null},"transactionId":%d}}`, eT, hashKey, timestamp, aT, aS, transactionId))
 		var value Auth
 
 		err := json.Unmarshal(j, &value)
 
-		if !strings.HasPrefix(hashKey, "0x") {
-			target := invalidHashKey(hashKey)
+		if eventType(eT) != AuthEventType {
+			target := eventType(eT).Error()
 			require.ErrorAs(t, err, &target)
 			return
-		}
-
-		if len(strings.TrimLeft(hashKey, "0x")) <= 0 || len(strings.TrimLeft(hashKey, "0x"))%2 != 0 {
-			target := invalidHashKey(hashKey)
-			require.ErrorAs(t, err, &target)
-			return
-		}
-
-		for _, letter := range strings.TrimLeft(hashKey, "0x") {
-			if !(letter >= '0' && letter <= '9' || letter >= 'a' && letter <= 'f' || letter >= 'A' && letter <= 'F') {
-				target := invalidHashKey(hashKey)
-				require.ErrorAs(t, err, &target)
-				return
-			}
 		}
 
 		switch authType(aT) {
 		case NoneType, NFCType, QRType, MobileType, NumPadType:
 		default:
-			target := invalidAuthType(authType(aT))
-			require.ErrorAs(t, err, &target)
+			require.ErrorAs(t, err, &InvalidAuthType{value.AuthType})
 			return
 		}
 
 		switch authStatus(aS) {
 		case NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus:
 		default:
-			target := invalidAuthStatus(authStatus(aS))
-			require.ErrorAs(t, err, &target)
+			require.ErrorAs(t, err, &InvalidAuthType{value.AuthType})
 			return
 		}
 
 		require.NoError(t, err)
 		assert.Equal(t, Auth{
 			TransactionId: transactionId,
-			HashKey:       hashKey,
+			HashKey:       fmt.Sprintf("%#x", hashKey),
 			Timestamp:     timestamp,
 			AuthType:      authType(aT),
 			AuthStatus:    authStatus(aS),

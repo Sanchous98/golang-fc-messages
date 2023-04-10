@@ -42,7 +42,7 @@ func (s *SerialConnectionRequest) UnmarshalJSON(bytes []byte) error {
 	switch s.Action {
 	case SerialConnectionActionStart, SerialConnectionActionReset:
 	default:
-		return invalidSerialConnectionAction(s.Action)
+		return InvalidSerialConnectionAction{s.Action}
 	}
 
 	s.TransactionId = e.TransactionId
@@ -54,7 +54,7 @@ func (s *SerialConnectionRequest) MarshalJSON() ([]byte, error) {
 	switch s.Action {
 	case SerialConnectionActionStart, SerialConnectionActionReset:
 	default:
-		return nil, invalidSerialConnectionAction(s.Action)
+		return nil, &InvalidSerialConnectionAction{s.Action}
 	}
 
 	type serialConnectionRequest SerialConnectionRequest

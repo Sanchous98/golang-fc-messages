@@ -1,71 +1,111 @@
 package messages
 
-import (
-	"fmt"
-)
+import "fmt"
 
-func invalidHashKey(hashKey string) error {
-	return fmt.Errorf(`invalid hashKey %q`, hashKey)
+type InvalidHashKey struct {
+	HashKey string
 }
 
-func invalidAuthStatus(got authStatus) error {
-	return fmt.Errorf("invalid authentication status %s! Expected %+q", got, [...]authStatus{
+func (e InvalidHashKey) Error() string { return "invalid hashKey " + e.HashKey }
+
+type InvalidAuthStatus struct {
+	Got authStatus
+}
+
+func (e InvalidAuthStatus) Error() string {
+	return fmt.Sprintf("invalid authentication status %s! Expected %+q", e.Got, [...]authStatus{
 		NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus,
 		FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus,
 	})
 }
 
-func invalidAuthType(got authType) error {
-	return fmt.Errorf("invalid authentication type %s! Expected %+q", got, [...]authType{
+type InvalidAuthType struct {
+	Got authType
+}
+
+func (e InvalidAuthType) Error() string {
+	return fmt.Sprintf("invalid authentication type %s! Expected %+q", e.Got, [...]authType{
 		NoneType, NFCType, QRType, MobileType, NumPadType,
 	})
 }
 
-func invalidDeviceStatusReason(got deviceStatusReason) error {
-	return fmt.Errorf("invalid device status reason %s! Expected %+q", string(got), [...]deviceStatusReason{
+type InvalidDeviceStatusReason struct {
+	Got deviceStatusReason
+}
+
+func (e InvalidDeviceStatusReason) Error() string {
+	return fmt.Sprintf("invalid device status reason %s! Expected %+q", e.Got, [...]deviceStatusReason{
 		CloudRequestedReason, ScheduledUpdateReason,
 	})
 }
 
-func invalidLockStatus(got lockStatus) error {
-	return fmt.Errorf("invalid authentication status %s! Expected %+q", string(got), [...]lockStatus{
+type InvalidLockStatus struct {
+	Got lockStatus
+}
+
+func (e InvalidLockStatus) Error() string {
+	return fmt.Sprintf("invalid authentication status %s! Expected %+q", e.Got, [...]lockStatus{
 		NoneLockStatus, ExtRelayStateLockStatus, LockOpenedLockStatus, LockClosedLockStatus,
 		DriverOnLockStatus, ErrorLockAlreadyOpenLockStatus, ErrorLockAlreadyClosedLockStatus,
 		ErrorDriverEnabledLockStatus, DeviceTypeUnknownLockStatus,
 	})
 }
 
-func expectedOfflineTimeoutError(got lockStatus) error {
-	return fmt.Errorf("invalid authentication status %s! Expected openTimeoutError", got)
+type ExpectedOfflineTimeoutError struct {
+	Got lockStatus
 }
 
-func invalidSerialConnectionAction(got serialConnectionAction) error {
-	return fmt.Errorf("invalid serial connection %s! Expected %+q", got, [...]serialConnectionAction{
+func (e ExpectedOfflineTimeoutError) Error() string {
+	return fmt.Sprintf("invalid authentication status %s! Expected openTimeoutError", e.Got)
+}
+
+type InvalidSerialConnectionAction struct {
+	Got serialConnectionAction
+}
+
+func (e InvalidSerialConnectionAction) Error() string {
+	return fmt.Sprintf("invalid serial connection %s! Expected %+q", e.Got, [...]serialConnectionAction{
 		SerialConnectionActionStart, SerialConnectionActionReset,
 	})
 }
 
-func invalidTransactionIdAction(got transactionIdAction) error {
-	return fmt.Errorf("invalid transaction id transactionIdAction %s! Expected %+q", got, [...]transactionIdAction{
+type InvalidTransactionIdAction struct {
+	Got transactionIdAction
+}
+
+func (e InvalidTransactionIdAction) Error() string {
+	return fmt.Sprintf(`invalid transaction id transactionIdAction %s! Expected %+q`, e.Got, [...]transactionIdAction{
 		TransactionActionRead, TransactionActionReset,
 	})
 }
 
-func invalidFirmwareUpgradeStatus(got firmwareUpgradeStatus) error {
-	return fmt.Errorf("invalid firmware upgrade status %s! Expected %+q", string(got), [...]firmwareUpgradeStatus{
+type InvalidFirmwareUpgradeStatus struct {
+	Got firmwareUpgradeStatus
+}
+
+func (e InvalidFirmwareUpgradeStatus) Error() string {
+	return fmt.Sprintf("invalid firmware upgrade status %s! Expected %+q", e.Got, [...]firmwareUpgradeStatus{
 		UpgradeSuccessStatus, UpgradeDeviceNotFoundStatus, UpgradeInvalidStateStatus,
 		UpgradeInvalidFileStatus, UpgradeInvalidFileIdStatus, UpgradeUnknownErrorStatus,
 	})
 }
 
-func invalidNetworkAction(got networkAction) error {
-	return fmt.Errorf("invalid network action %s! Expected %+q", string(got), [...]networkAction{
+type InvalidNetworkAction struct {
+	Got networkAction
+}
+
+func (e InvalidNetworkAction) Error() string {
+	return fmt.Sprintf("invalid network action %s! Expected %+q", e.Got, [...]networkAction{
 		NetworkOpenAction, NetworkCloseAction,
 	})
 }
 
-func invalidStorageResponseStatus(got storageResponseStatus) error {
-	return fmt.Errorf("invalid storage response status %s! Expected %+q", string(got), [...]storageResponseStatus{
+type InvalidStorageResponseStatus struct {
+	Got storageResponseStatus
+}
+
+func (e InvalidStorageResponseStatus) Error() string {
+	return fmt.Sprintf("invalid storage response status %d! Expected %+q", e.Got, [...]storageResponseStatus{
 		StorageResponseStatusOk, StorageResponseStatusReadOk, StorageResponseStatusErrorKeyNotFound,
 		StorageResponseStatusErrorKeyAlreadyExists, StorageResponseStatusErrorFlashStorageFull, StorageResponseStatusErrorCritical,
 	})

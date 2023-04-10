@@ -65,8 +65,7 @@ func FuzzDeviceStatusResponseMarshal(f *testing.F) {
 		switch value.Reason {
 		case NoneReason, CloudRequestedReason, ScheduledUpdateReason, StatusChangeReason, ErrorDetectedReason:
 		default:
-			target := invalidDeviceStatusReason(value.Reason)
-			require.ErrorAs(t, err, &target)
+			require.ErrorAs(t, err, &InvalidDeviceStatusReason{value.Reason})
 			return
 		}
 
@@ -97,8 +96,7 @@ func FuzzDeviceStatusResponseUnmarshal(f *testing.F) {
 		switch value.Reason {
 		case NoneReason, CloudRequestedReason, ScheduledUpdateReason, StatusChangeReason, ErrorDetectedReason:
 		default:
-			target := invalidDeviceStatusReason(value.Reason)
-			require.ErrorAs(t, err, &target)
+			require.ErrorAs(t, err, &InvalidDeviceStatusReason{value.Reason})
 			return
 		}
 
