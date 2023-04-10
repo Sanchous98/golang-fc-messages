@@ -5,6 +5,7 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"math/rand"
 	"testing"
 	"time"
 )
@@ -40,11 +41,14 @@ func FuzzDeviceStatusRequestUnmarshal(f *testing.F) {
 }
 
 func FuzzDeviceStatusResponseMarshal(f *testing.F) {
-	f.Add(0, string(CloudRequestedReason), time.Now().Unix(), 0, 0, 0, 0)
-	f.Add(0, string(ScheduledUpdateReason), time.Now().Unix(), 0, 0, 0, 0)
+	f.Add(rand.Int(), rand.Int(), rand.Int(), rand.Int(), string(CloudRequestedReason), time.Now().Unix(), 0, 0, 0, 0)
+	f.Add(rand.Int(), rand.Int(), rand.Int(), rand.Int(), string(ScheduledUpdateReason), time.Now().Unix(), 0, 0, 0, 0)
 
-	f.Fuzz(func(t *testing.T, transactionId int, reason string, time int64, batteryLevel, batteryLevelLoad, networkState, autoRequest int) {
+	f.Fuzz(func(t *testing.T, shortAddr, extAddr, rssi, transactionId int, reason string, time int64, batteryLevel, batteryLevelLoad, networkState, autoRequest int) {
 		value := &DeviceStatusResponse{
+			ShortAddr:        fmt.Sprintf("%#x", shortAddr),
+			ExtAddr:          fmt.Sprintf("%#x", extAddr),
+			Rssi:             rssi,
 			TransactionId:    transactionId,
 			Reason:           deviceStatusReason(reason),
 			Time:             time,
@@ -64,16 +68,16 @@ func FuzzDeviceStatusResponseMarshal(f *testing.F) {
 		}
 
 		require.NoError(t, err)
-		assert.Equal(t, []byte(fmt.Sprintf(`{"event":{"eventType":"deviceStatusRsp","payload":{"reason":%q,"time":%d,"batteryLevel":%d,"batteryLevelLoad":%d,"networkState":%d,"autoRequest":%d},"transactionId":%d}}`, reason, time, batteryLevel, batteryLevelLoad, networkState, autoRequest, transactionId)), result)
+		assert.Equal(t, []byte(fmt.Sprintf(`{"short_addr":"%#x","ext_addr":"%#x","rssi":%d,"eventType":"deviceStatusRsp","payload":{"reason":%q,"time":%d,"batteryLevel":%d,"batteryLevelLoad":%d,"networkState":%d,"autoRequest":%d},"transactionId":%d}`, shortAddr, extAddr, rssi, reason, time, batteryLevel, batteryLevelLoad, networkState, autoRequest, transactionId)), result)
 	})
 }
 
 func FuzzDeviceStatusResponseUnmarshal(f *testing.F) {
-	f.Add(string(DeviceStatusResponseEvent), 0, string(CloudRequestedReason), time.Now().Unix(), 0, 0, 0, 0)
-	f.Add(string(DeviceStatusResponseEvent), 0, string(ScheduledUpdateReason), time.Now().Unix(), 0, 0, 0, 0)
+	f.Add(rand.Int(), rand.Int(), rand.Int(), string(DeviceStatusResponseEvent), 0, string(CloudRequestedReason), time.Now().Unix(), 0, 0, 0, 0)
+	f.Add(rand.Int(), rand.Int(), rand.Int(), string(DeviceStatusResponseEvent), 0, string(ScheduledUpdateReason), time.Now().Unix(), 0, 0, 0, 0)
 
-	f.Fuzz(func(t *testing.T, eT string, transactionId int, reason string, time int64, batteryLevel, batteryLevelLoad, networkState, autoRequest int) {
-		expected := []byte(fmt.Sprintf(`{"event":{"eventType":%q,"payload":{"reason":%q,"time":%d,"batteryLevel":%d,"batteryLevelLoad":%d,"networkState":%d,"autoRequest":%d},"transactionId":%d}}`, eT, reason, time, batteryLevel, batteryLevelLoad, networkState, autoRequest, transactionId))
+	f.Fuzz(func(t *testing.T, shortAddr, extAddr, rssi int, eT string, transactionId int, reason string, time int64, batteryLevel, batteryLevelLoad, networkState, autoRequest int) {
+		expected := []byte(fmt.Sprintf(`{"short_addr":"%#x","ext_addr":"%#x","rssi":%d,"eventType":%q,"payload":{"reason":%q,"time":%d,"batteryLevel":%d,"batteryLevelLoad":%d,"networkState":%d,"autoRequest":%d},"transactionId":%d}`, shortAddr, extAddr, rssi, eT, reason, time, batteryLevel, batteryLevelLoad, networkState, autoRequest, transactionId))
 
 		var value DeviceStatusResponse
 
@@ -94,6 +98,9 @@ func FuzzDeviceStatusResponseUnmarshal(f *testing.F) {
 
 		require.NoError(t, err)
 		assert.Equal(t, DeviceStatusResponse{
+			ShortAddr:        fmt.Sprintf("%#x", shortAddr),
+			ExtAddr:          fmt.Sprintf("%#x", extAddr),
+			Rssi:             rssi,
 			TransactionId:    transactionId,
 			Reason:           deviceStatusReason(reason),
 			Time:             time,

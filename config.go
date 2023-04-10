@@ -69,6 +69,9 @@ func (r *UpdateConfig) MarshalJSON() ([]byte, error) {
 }
 
 type ConfigResponse struct {
+	ShortAddr            string `json:"-"`
+	ExtAddr              string `json:"-"`
+	Rssi                 int    `json:"-"`
 	TransactionId        int    `json:"-"`
 	TxPower              uint   `json:"txPower,omitempty"`
 	DeviceType           string `json:"deviceType,omitempty"`
@@ -92,7 +95,7 @@ type ConfigResponse struct {
 func (r *ConfigResponse) UnmarshalJSON(bytes []byte) error {
 	type configResponse ConfigResponse
 
-	var e event
+	var e response
 	var err error
 
 	if err = json.Unmarshal(bytes, &e); err != nil {
@@ -108,6 +111,9 @@ func (r *ConfigResponse) UnmarshalJSON(bytes []byte) error {
 	}
 
 	r.TransactionId = e.TransactionId
+	r.ShortAddr = e.ShortAddr
+	r.ExtAddr = e.ExtAddr
+	r.Rssi = e.Rssi
 
 	return nil
 }
@@ -115,10 +121,13 @@ func (r *ConfigResponse) UnmarshalJSON(bytes []byte) error {
 func (r *ConfigResponse) MarshalJSON() ([]byte, error) {
 	type configResponse ConfigResponse
 
-	var e event
+	var e response
 	var err error
 
 	e.TransactionId = r.TransactionId
+	e.ShortAddr = r.ShortAddr
+	e.ExtAddr = r.ExtAddr
+	e.Rssi = r.Rssi
 	e.EventType = DeviceConfigResponseEvent
 
 	if e.Payload, err = json.Marshal((*configResponse)(r)); err != nil {

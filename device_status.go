@@ -46,6 +46,9 @@ func (d *DeviceStatusRequest) MarshalJSON() ([]byte, error) {
 }
 
 type DeviceStatusResponse struct {
+	ShortAddr        string             `json:"-"`
+	ExtAddr          string             `json:"-"`
+	Rssi             int                `json:"-"`
 	TransactionId    int                `json:"-"`
 	Reason           deviceStatusReason `json:"reason"`
 	Time             int64              `json:"time"`
@@ -56,7 +59,7 @@ type DeviceStatusResponse struct {
 }
 
 func (d *DeviceStatusResponse) UnmarshalJSON(bytes []byte) error {
-	var e event
+	var e response
 
 	if err := json.Unmarshal(bytes, &e); err != nil {
 		return err
@@ -79,6 +82,9 @@ func (d *DeviceStatusResponse) UnmarshalJSON(bytes []byte) error {
 	}
 
 	d.TransactionId = e.TransactionId
+	d.ShortAddr = e.ShortAddr
+	d.ExtAddr = e.ExtAddr
+	d.Rssi = e.Rssi
 
 	return nil
 }
@@ -92,11 +98,14 @@ func (d *DeviceStatusResponse) MarshalJSON() ([]byte, error) {
 
 	type deviceStatusResponse DeviceStatusResponse
 
-	var e event
+	var e response
 	var err error
 
 	e.EventType = DeviceStatusResponseEvent
 	e.TransactionId = d.TransactionId
+	e.ShortAddr = d.ShortAddr
+	e.ExtAddr = d.ExtAddr
+	e.Rssi = d.Rssi
 
 	if e.Payload, err = json.Marshal((*deviceStatusResponse)(d)); err != nil {
 		return nil, err
