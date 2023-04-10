@@ -1,4 +1,4 @@
-module bitbucket.org/4suites/golang-fc-messages
+module bitbucket.org/4suites/golang-fc-messages/v2
 
 go 1.20
 
