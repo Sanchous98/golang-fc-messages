@@ -12,8 +12,11 @@ const (
 type deviceStatusReason string
 
 const (
+	NoneReason            deviceStatusReason = "none"
 	CloudRequestedReason  deviceStatusReason = "cloudRequested"
 	ScheduledUpdateReason deviceStatusReason = "scheduledUpdate"
+	StatusChangeReason    deviceStatusReason = "statusChange"
+	ErrorDetectedReason   deviceStatusReason = "errorDetected"
 )
 
 type DeviceStatusRequest struct {
@@ -76,7 +79,7 @@ func (d *DeviceStatusResponse) UnmarshalJSON(bytes []byte) error {
 	}
 
 	switch d.Reason {
-	case CloudRequestedReason, ScheduledUpdateReason:
+	case NoneReason, CloudRequestedReason, ScheduledUpdateReason, StatusChangeReason, ErrorDetectedReason:
 	default:
 		return invalidDeviceStatusReason(d.Reason)
 	}
@@ -91,7 +94,7 @@ func (d *DeviceStatusResponse) UnmarshalJSON(bytes []byte) error {
 
 func (d *DeviceStatusResponse) MarshalJSON() ([]byte, error) {
 	switch d.Reason {
-	case CloudRequestedReason, ScheduledUpdateReason:
+	case NoneReason, CloudRequestedReason, ScheduledUpdateReason, StatusChangeReason, ErrorDetectedReason:
 	default:
 		return nil, invalidDeviceStatusReason(d.Reason)
 	}
