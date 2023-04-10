@@ -6,17 +6,17 @@ import (
 )
 
 const (
-	StateOpen   = "lockActionOpen"
-	StateClosed = "lockActionClose"
-	StateAuto   = "lockActionAuto"
+	LockActionOpenEventType  eventType = "lockActionOpen"
+	LockActionCloseEventType eventType = "lockActionClose"
+	LockActionAutoEventType  eventType = "lockActionAuto"
 )
 
-type LockState string
+type eventType string
 
-func (l LegacyLockEvent) Error() error { return errors.New("invalid lock event type ") }
+func (e eventType) Error() error { return errors.New("invalid lock event type " + string(e)) }
 
 type LegacyLockEvent struct {
-	State   string
+	State   eventType
 	Reclose uint8
 }
 
@@ -27,25 +27,25 @@ func (l *LegacyLockEvent) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	var e map[string]map[string]float64
+	var e map[eventType]map[string]float64
 
 	if err := json.Unmarshal(ev.State, &e); err != nil {
 		return err
 	}
 
-	if _, ok := e[StateOpen]; ok {
-		l.State = StateOpen
+	if _, ok := e[LockActionOpenEventType]; ok {
+		l.State = LockActionOpenEventType
 		return nil
 	}
 
-	if _, ok := e[StateClosed]; ok {
-		l.State = StateClosed
+	if _, ok := e[LockActionCloseEventType]; ok {
+		l.State = LockActionCloseEventType
 		return nil
 	}
 
-	if _, ok := e[StateAuto]; ok {
-		l.State = StateAuto
-		l.Reclose = uint8(e[StateAuto]["recloseDelay"])
+	if _, ok := e[LockActionAutoEventType]; ok {
+		l.State = LockActionAutoEventType
+		l.Reclose = uint8(e[LockActionAutoEventType]["recloseDelay"])
 
 		if l.Reclose == 0 {
 			l.Reclose = 5
@@ -54,13 +54,17 @@ func (l *LegacyLockEvent) UnmarshalJSON(bytes []byte) error {
 		return nil
 	}
 
-	return errors.New("unknown lock state")
+	for k := range e {
+		return k.Error()
+	}
+
+	return nil
 }
 
 func (l *LegacyLockEvent) MarshalJSON() ([]byte, error) {
 	state := map[string]uint8{}
 
-	if l.State == StateAuto {
+	if l.State == LockActionAutoEventType {
 		if l.Reclose == 0 {
 			l.Reclose = 5
 		}
@@ -69,7 +73,7 @@ func (l *LegacyLockEvent) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(map[string]any{
-		"state": map[string]any{
+		"state": map[eventType]any{
 			l.State: state,
 		},
 	})
