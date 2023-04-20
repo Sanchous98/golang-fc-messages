@@ -1,7 +1,6 @@
 package messages
 
 import (
-	"encoding/hex"
 	"github.com/goccy/go-json"
 	"strings"
 )
@@ -63,6 +62,10 @@ func (a *Auth) UnmarshalJSON(bytes []byte) error {
 		return InvalidHashKey{a.HashKey}
 	}
 
+	if strings.TrimLeft(a.HashKey, "0x") == "" {
+		return InvalidHashKey{a.HashKey}
+	}
+
 	switch a.AuthType {
 	case NoneType, NFCType, QRType, MobileType, NumPadType:
 	default:
@@ -82,16 +85,16 @@ func (a *Auth) UnmarshalJSON(bytes []byte) error {
 func (a *Auth) MarshalJSON() ([]byte, error) {
 	type auth Auth
 
-	switch a.AuthStatus {
-	case NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus:
-	default:
-		return nil, InvalidAuthStatus{a.AuthStatus}
-	}
-
 	switch a.AuthType {
 	case NoneType, NFCType, QRType, MobileType, NumPadType:
 	default:
 		return nil, InvalidAuthType{a.AuthType}
+	}
+
+	switch a.AuthStatus {
+	case NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus:
+	default:
+		return nil, InvalidAuthStatus{a.AuthStatus}
 	}
 
 	var e event
@@ -102,10 +105,6 @@ func (a *Auth) MarshalJSON() ([]byte, error) {
 	}
 
 	if strings.TrimLeft(a.HashKey, "0x") == "" {
-		return nil, InvalidHashKey{a.HashKey}
-	}
-
-	if _, err = hex.DecodeString(strings.TrimLeft(a.HashKey, "0x")); err != nil {
 		return nil, InvalidHashKey{a.HashKey}
 	}
 

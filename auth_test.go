@@ -1,7 +1,6 @@
 package messages
 
 import (
-	crypto "crypto/rand"
 	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/stretchr/testify/assert"
@@ -12,19 +11,16 @@ import (
 )
 
 func FuzzAuthMarshal(f *testing.F) {
-	hash := make([]byte, 8)
-
 	for _, aT := range [...]authType{NoneType, NFCType, QRType, MobileType, NumPadType} {
 		for _, aS := range [...]authStatus{NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus} {
-			_, _ = crypto.Read(hash)
-			f.Add(rand.Int(), string(hash), rand.Int63(), string(aT), string(aS))
+			f.Add(rand.Int(), rand.Int(), rand.Int63(), string(aT), string(aS))
 		}
 	}
 
-	f.Fuzz(func(t *testing.T, transactionId int, hashKey string, timestamp int64, aT string, aS string) {
+	f.Fuzz(func(t *testing.T, transactionId, hashKey int, timestamp int64, aT string, aS string) {
 		value := Auth{
 			TransactionId: transactionId,
-			HashKey:       hashKey,
+			HashKey:       fmt.Sprintf("%#x", hashKey),
 			Timestamp:     timestamp,
 			AuthStatus:    authStatus(aS),
 			AuthType:      authType(aT),
@@ -37,16 +33,9 @@ func FuzzAuthMarshal(f *testing.F) {
 			return
 		}
 
-		if len(strings.TrimLeft(value.HashKey, "0x")) <= 0 || len(strings.TrimLeft(value.HashKey, "0x"))%2 != 0 {
+		if len(strings.TrimLeft(value.HashKey, "0x")) <= 0 {
 			require.ErrorAs(t, err, &InvalidHashKey{value.HashKey})
 			return
-		}
-
-		for _, letter := range strings.TrimLeft(value.HashKey, "0x") {
-			if !(letter >= '0' && letter <= '9' || letter >= 'a' && letter <= 'f' || letter >= 'A' && letter <= 'F') {
-				require.ErrorAs(t, err, &InvalidHashKey{value.HashKey})
-				return
-			}
 		}
 
 		switch value.AuthType {
@@ -59,12 +48,25 @@ func FuzzAuthMarshal(f *testing.F) {
 		switch value.AuthStatus {
 		case NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus:
 		default:
-			require.ErrorAs(t, err, &InvalidAuthType{value.AuthType})
+			require.ErrorAs(t, err, &InvalidAuthStatus{value.AuthStatus})
 			return
 		}
 
 		require.NoError(t, err)
-		assert.Equal(t, []byte(fmt.Sprintf(`{"event":{"eventType":"authEvent","payload":{"hashKey":%q,"timestamp":%d,"authType":%q,"authStatus":%q,"channelIds":null},"transactionId":%d}}`, hashKey, timestamp, aT, aS, transactionId)), res)
+		j, _ := json.Marshal(map[string]any{
+			"event": map[string]any{
+				"eventType": "authEvent",
+				"payload": map[string]any{
+					"hashKey":    fmt.Sprintf("%#x", hashKey),
+					"timestamp":  timestamp,
+					"authType":   aT,
+					"authStatus": aS,
+					"channelIds": nil,
+				},
+				"transactionId": transactionId,
+			},
+		})
+		assert.JSONEq(t, string(j), string(res))
 	})
 }
 
@@ -76,7 +78,18 @@ func FuzzAuthUnmarshal(f *testing.F) {
 	}
 
 	f.Fuzz(func(t *testing.T, eT string, transactionId, hashKey int, timestamp int64, aT string, aS string) {
-		j := []byte(fmt.Sprintf(`{"event":{"eventType":%q,"payload":{"hashKey":"%#x","timestamp":%d,"authType":%q,"authStatus":%q,"channelIds":null},"transactionId":%d}}`, eT, hashKey, timestamp, aT, aS, transactionId))
+		j, _ := json.Marshal(map[string]any{
+			"event": map[string]any{
+				"eventType": eT,
+				"payload": map[string]any{
+					"hashKey":    fmt.Sprintf("%#x", hashKey),
+					"timestamp":  timestamp,
+					"authType":   aT,
+					"authStatus": aS,
+				},
+				"transactionId": transactionId,
+			},
+		})
 		var value Auth
 
 		err := json.Unmarshal(j, &value)
@@ -97,7 +110,7 @@ func FuzzAuthUnmarshal(f *testing.F) {
 		switch authStatus(aS) {
 		case NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus:
 		default:
-			require.ErrorAs(t, err, &InvalidAuthType{value.AuthType})
+			require.ErrorAs(t, err, &InvalidAuthStatus{value.AuthStatus})
 			return
 		}
 

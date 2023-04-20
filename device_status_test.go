@@ -41,11 +41,9 @@ func FuzzDeviceStatusRequestUnmarshal(f *testing.F) {
 }
 
 func FuzzDeviceStatusResponseMarshal(f *testing.F) {
-	f.Add(rand.Int(), rand.Int(), rand.Int(), rand.Int(), string(NoneReason), time.Now().Unix(), 0, 0, 0, 0)
-	f.Add(rand.Int(), rand.Int(), rand.Int(), rand.Int(), string(CloudRequestedReason), time.Now().Unix(), 0, 0, 0, 0)
-	f.Add(rand.Int(), rand.Int(), rand.Int(), rand.Int(), string(ScheduledUpdateReason), time.Now().Unix(), 0, 0, 0, 0)
-	f.Add(rand.Int(), rand.Int(), rand.Int(), rand.Int(), string(StatusChangeReason), time.Now().Unix(), 0, 0, 0, 0)
-	f.Add(rand.Int(), rand.Int(), rand.Int(), rand.Int(), string(ErrorDetectedReason), time.Now().Unix(), 0, 0, 0, 0)
+	for _, r := range [...]deviceStatusReason{NoneReason, CloudRequestedReason, ScheduledUpdateReason, StatusChangeReason, ErrorDetectedReason} {
+		f.Add(rand.Int(), rand.Int(), rand.Int(), rand.Int(), string(r), time.Now().Unix(), 0, 0, 0, 0)
+	}
 
 	f.Fuzz(func(t *testing.T, shortAddr, extAddr, rssi, transactionId int, reason string, time int64, batteryLevel, batteryLevelLoad, networkState, autoRequest int) {
 		value := &DeviceStatusResponse{
@@ -75,11 +73,9 @@ func FuzzDeviceStatusResponseMarshal(f *testing.F) {
 }
 
 func FuzzDeviceStatusResponseUnmarshal(f *testing.F) {
-	f.Add(rand.Int(), rand.Int(), rand.Int(), string(DeviceStatusResponseEvent), 0, string(NoneReason), time.Now().Unix(), 0, 0, 0, 0)
-	f.Add(rand.Int(), rand.Int(), rand.Int(), string(DeviceStatusResponseEvent), 0, string(CloudRequestedReason), time.Now().Unix(), 0, 0, 0, 0)
-	f.Add(rand.Int(), rand.Int(), rand.Int(), string(DeviceStatusResponseEvent), 0, string(ScheduledUpdateReason), time.Now().Unix(), 0, 0, 0, 0)
-	f.Add(rand.Int(), rand.Int(), rand.Int(), string(DeviceStatusResponseEvent), 0, string(StatusChangeReason), time.Now().Unix(), 0, 0, 0, 0)
-	f.Add(rand.Int(), rand.Int(), rand.Int(), string(DeviceStatusResponseEvent), 0, string(ErrorDetectedReason), time.Now().Unix(), 0, 0, 0, 0)
+	for _, r := range [...]deviceStatusReason{NoneReason, CloudRequestedReason, ScheduledUpdateReason, StatusChangeReason, ErrorDetectedReason} {
+		f.Add(rand.Int(), rand.Int(), rand.Int(), string(DeviceStatusResponseEvent), 0, string(r), time.Now().Unix(), 0, 0, 0, 0)
+	}
 
 	f.Fuzz(func(t *testing.T, shortAddr, extAddr, rssi int, eT string, transactionId int, reason string, time int64, batteryLevel, batteryLevelLoad, networkState, autoRequest int) {
 		expected := []byte(fmt.Sprintf(`{"short_addr":"%#x","ext_addr":"%#x","rssi":%d,"eventType":%q,"payload":{"reason":%q,"time":%d,"batteryLevel":%d,"batteryLevelLoad":%d,"networkState":%d,"autoRequest":%d},"transactionId":%d}`, shortAddr, extAddr, rssi, eT, reason, time, batteryLevel, batteryLevelLoad, networkState, autoRequest, transactionId))
