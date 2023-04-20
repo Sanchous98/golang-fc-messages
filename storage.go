@@ -7,6 +7,7 @@ import (
 
 const (
 	LocalStorageAddKeyEventType    eventType = "localStorageAddKey"
+	LocalStorageUpdateKeyEventType eventType = "localStorageUpdateKey"
 	LocalStorageGetKeyEventType    eventType = "localStorageGetKey"
 	LocalStorageDeleteKeyEventType eventType = "localStorageDeleteKey"
 	LocalStorageResponseEventType  eventType = "localStorageResponse"
@@ -123,6 +124,49 @@ func (s *StorageAddKey) MarshalJSON() ([]byte, error) {
 	e.TransactionId = s.TransactionId
 
 	if e.Payload, err = json.Marshal((*storageAddKey)(s)); err != nil {
+		return nil, err
+	}
+
+	return json.Marshal(&e)
+}
+
+type StorageUpdateKey struct {
+	TransactionId int `json:"-"`
+	StorageData   `json:","`
+}
+
+func (s *StorageUpdateKey) UnmarshalJSON(bytes []byte) error {
+	type storageUpdateKey StorageUpdateKey
+
+	var e event
+
+	if err := json.Unmarshal(bytes, &e); err != nil {
+		return err
+	}
+
+	if e.EventType != LocalStorageUpdateKeyEventType {
+		return e.EventType.Error()
+	}
+
+	if err := json.Unmarshal(e.Payload, (*storageUpdateKey)(s)); err != nil {
+		return err
+	}
+
+	s.TransactionId = e.TransactionId
+
+	return nil
+}
+
+func (s *StorageUpdateKey) MarshalJSON() ([]byte, error) {
+	type storageUpdateKey StorageUpdateKey
+
+	var e event
+	var err error
+
+	e.EventType = LocalStorageUpdateKeyEventType
+	e.TransactionId = s.TransactionId
+
+	if e.Payload, err = json.Marshal((*storageUpdateKey)(s)); err != nil {
 		return nil, err
 	}
 
