@@ -13,12 +13,15 @@ import (
 func FuzzAuthMarshal(f *testing.F) {
 	for _, aT := range [...]authType{NoneType, NFCType, QRType, MobileType, NumPadType} {
 		for _, aS := range [...]authStatus{NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus} {
-			f.Add(rand.Int(), rand.Int(), rand.Int63(), string(aT), string(aS))
+			f.Add(rand.Int(), rand.Int(), rand.Int(), rand.Int(), rand.Int(), rand.Int63(), string(aT), string(aS))
 		}
 	}
 
-	f.Fuzz(func(t *testing.T, transactionId, hashKey int, timestamp int64, aT string, aS string) {
+	f.Fuzz(func(t *testing.T, shortAddr, extAddr, rssi, transactionId, hashKey int, timestamp int64, aT string, aS string) {
 		value := Auth{
+			ExtAddr:       fmt.Sprintf("%#x", extAddr),
+			ShortAddr:     fmt.Sprintf("%#x", shortAddr),
+			Rssi:          rssi,
 			TransactionId: transactionId,
 			HashKey:       fmt.Sprintf("%#x", hashKey),
 			Timestamp:     timestamp,
@@ -54,17 +57,18 @@ func FuzzAuthMarshal(f *testing.F) {
 
 		require.NoError(t, err)
 		j, _ := json.Marshal(map[string]any{
-			"event": map[string]any{
-				"eventType": "authEvent",
-				"payload": map[string]any{
-					"hashKey":    fmt.Sprintf("%#x", hashKey),
-					"timestamp":  timestamp,
-					"authType":   aT,
-					"authStatus": aS,
-					"channelIds": nil,
-				},
-				"transactionId": transactionId,
+			"ext_addr":   fmt.Sprintf("%#x", extAddr),
+			"short_addr": fmt.Sprintf("%#x", shortAddr),
+			"rssi":       rssi,
+			"eventType":  "authEvent",
+			"payload": map[string]any{
+				"hashKey":    fmt.Sprintf("%#x", hashKey),
+				"timestamp":  timestamp,
+				"authType":   aT,
+				"authStatus": aS,
+				"channelIds": nil,
 			},
+			"transactionId": transactionId,
 		})
 		assert.JSONEq(t, string(j), string(res))
 	})
@@ -73,22 +77,23 @@ func FuzzAuthMarshal(f *testing.F) {
 func FuzzAuthUnmarshal(f *testing.F) {
 	for _, aT := range [...]authType{NoneType, NFCType, QRType, MobileType, NumPadType} {
 		for _, aS := range [...]authStatus{NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus} {
-			f.Add(string(AuthEventType), rand.Int(), rand.Int(), rand.Int63(), string(aT), string(aS))
+			f.Add(string(AuthEventType), rand.Int(), rand.Int(), rand.Int(), rand.Int(), rand.Int(), rand.Int63(), string(aT), string(aS))
 		}
 	}
 
-	f.Fuzz(func(t *testing.T, eT string, transactionId, hashKey int, timestamp int64, aT string, aS string) {
+	f.Fuzz(func(t *testing.T, eT string, shortAddr, extAddr, rssi, transactionId, hashKey int, timestamp int64, aT string, aS string) {
 		j, _ := json.Marshal(map[string]any{
-			"event": map[string]any{
-				"eventType": eT,
-				"payload": map[string]any{
-					"hashKey":    fmt.Sprintf("%#x", hashKey),
-					"timestamp":  timestamp,
-					"authType":   aT,
-					"authStatus": aS,
-				},
-				"transactionId": transactionId,
+			"ext_addr":   fmt.Sprintf("%#x", extAddr),
+			"short_addr": fmt.Sprintf("%#x", shortAddr),
+			"rssi":       rssi,
+			"eventType":  eT,
+			"payload": map[string]any{
+				"hashKey":    fmt.Sprintf("%#x", hashKey),
+				"timestamp":  timestamp,
+				"authType":   aT,
+				"authStatus": aS,
 			},
+			"transactionId": transactionId,
 		})
 		var value Auth
 
@@ -116,6 +121,9 @@ func FuzzAuthUnmarshal(f *testing.F) {
 
 		require.NoError(t, err)
 		assert.Equal(t, Auth{
+			ExtAddr:       fmt.Sprintf("%#x", extAddr),
+			ShortAddr:     fmt.Sprintf("%#x", shortAddr),
+			Rssi:          rssi,
 			TransactionId: transactionId,
 			HashKey:       fmt.Sprintf("%#x", hashKey),
 			Timestamp:     timestamp,

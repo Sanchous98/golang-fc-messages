@@ -33,6 +33,9 @@ const (
 )
 
 type Auth struct {
+	ShortAddr     string     `json:"-"`
+	ExtAddr       string     `json:"-"`
+	Rssi          int        `json:"-"`
 	TransactionId int        `json:"-"`
 	HashKey       string     `json:"hashKey"`
 	Timestamp     int64      `json:"timestamp"`
@@ -44,17 +47,17 @@ type Auth struct {
 func (a *Auth) UnmarshalJSON(bytes []byte) error {
 	type auth Auth
 
-	var e event
+	var r response
 
-	if err := json.Unmarshal(bytes, &e); err != nil {
+	if err := json.Unmarshal(bytes, &r); err != nil {
 		return err
 	}
 
-	if e.EventType != AuthEventType {
-		return e.EventType.Error()
+	if r.EventType != AuthEventType {
+		return r.EventType.Error()
 	}
 
-	if err := json.Unmarshal(e.Payload, (*auth)(a)); err != nil {
+	if err := json.Unmarshal(r.Payload, (*auth)(a)); err != nil {
 		return err
 	}
 
@@ -78,7 +81,10 @@ func (a *Auth) UnmarshalJSON(bytes []byte) error {
 		return InvalidAuthStatus{a.AuthStatus}
 	}
 
-	a.TransactionId = e.TransactionId
+	a.TransactionId = r.TransactionId
+	a.ShortAddr = r.ShortAddr
+	a.ExtAddr = r.ExtAddr
+	a.Rssi = r.Rssi
 
 	return nil
 }
@@ -97,7 +103,7 @@ func (a *Auth) MarshalJSON() ([]byte, error) {
 		return nil, InvalidAuthStatus{a.AuthStatus}
 	}
 
-	var e event
+	var r response
 	var err error
 
 	if !strings.HasPrefix(a.HashKey, "0x") {
@@ -108,12 +114,15 @@ func (a *Auth) MarshalJSON() ([]byte, error) {
 		return nil, InvalidHashKey{a.HashKey}
 	}
 
-	e.TransactionId = a.TransactionId
-	e.EventType = AuthEventType
+	r.TransactionId = a.TransactionId
+	r.ShortAddr = a.ShortAddr
+	r.ExtAddr = a.ExtAddr
+	r.Rssi = a.Rssi
+	r.EventType = AuthEventType
 
-	if e.Payload, err = json.Marshal((*auth)(a)); err != nil {
+	if r.Payload, err = json.Marshal((*auth)(a)); err != nil {
 		return nil, err
 	}
 
-	return json.Marshal(&e)
+	return json.Marshal(&r)
 }
