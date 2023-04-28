@@ -1,13 +1,12 @@
 package messages
 
 import (
-	"errors"
 	"github.com/goccy/go-json"
 )
 
 type eventType string
 
-func (e eventType) Error() error { return errors.New("invalid event type " + string(e)) }
+func (e eventType) Error() error { return InvalidEventType{e} }
 
 type event struct {
 	EventType     eventType       `json:"eventType"`

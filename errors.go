@@ -2,6 +2,12 @@ package messages
 
 import "fmt"
 
+type InvalidEventType struct {
+	Got eventType
+}
+
+func (e InvalidEventType) Error() string { return "invalid event type " + string(e.Got) }
+
 type InvalidHashKey struct {
 	HashKey string
 }
