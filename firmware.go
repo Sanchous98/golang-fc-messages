@@ -8,6 +8,7 @@ const (
 	FwVersionUpdateRequestEventType  eventType = "fwUpdateReq"
 	FwVersionUpdateResponseEventType eventType = "fwUpdateRsp"
 	FwBlockResponseEventType         eventType = "fwBlockRsp"
+	FwUpdateAbortType                eventType = "fwUpdateAbortReq"
 )
 
 const (
@@ -260,4 +261,31 @@ func (f *FirmwareBlockResponse) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(&r)
+}
+
+type FirmwareUpdateAbort struct {
+	TransactionId int `json:"-"`
+}
+
+func (f *FirmwareUpdateAbort) UnmarshalJSON(bytes []byte) error {
+	var e event
+	if err := json.Unmarshal(bytes, &e); err != nil {
+		return err
+	}
+
+	if e.EventType != FwUpdateAbortType {
+		return e.EventType.Error()
+	}
+
+	f.TransactionId = e.TransactionId
+	return nil
+}
+
+func (f *FirmwareUpdateAbort) MarshalJSON() ([]byte, error) {
+	var e event
+
+	e.TransactionId = f.TransactionId
+	e.EventType = FwUpdateAbortType
+
+	return json.Marshal(&e)
 }
