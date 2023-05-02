@@ -116,3 +116,16 @@ func (e InvalidStorageResponseStatus) Error() string {
 		StorageResponseStatusErrorKeyAlreadyExists, StorageResponseStatusErrorFlashStorageFull, StorageResponseStatusErrorCritical,
 	})
 }
+
+type InvalidConfigResponseStatus struct {
+	Got configResponseStatus
+}
+
+func (e InvalidConfigResponseStatus) Error() string {
+	return fmt.Sprintf("invalid config response status \"%s\"! Expected %+q", e.Got, [...]configResponseStatus{
+		ResponseStatusNone, ResponseStatusCreateOK, ResponseStatusReadOK, ResponseStatusUpdateOK,
+		ResponseStatusDeleteOK, ResponseStatusConfigSizeError, ResponseStatusError, ResponseStatusErrorOutOfRange,
+		ResponseStatusErrorNotFound, ResponseStatusErrorFlash, ResponseStatusErrorNoCallBack, ResponseStatusErrorNoSpace,
+		ResponseStatusErrorNoReadAccess, ResponseStatusErrorNoWriteAccess,
+	})
+}

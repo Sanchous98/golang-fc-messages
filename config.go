@@ -8,6 +8,25 @@ const (
 	DeviceConfigResponseEvent eventType = "deviceConfigResponse"
 )
 
+const (
+	ResponseStatusNone               configResponseStatus = "none"
+	ResponseStatusCreateOK           configResponseStatus = "createOK"
+	ResponseStatusReadOK             configResponseStatus = "readOK"
+	ResponseStatusUpdateOK           configResponseStatus = "updateOK"
+	ResponseStatusDeleteOK           configResponseStatus = "deleteOK"
+	ResponseStatusConfigSizeError    configResponseStatus = "configSizeError"
+	ResponseStatusError              configResponseStatus = "error"
+	ResponseStatusErrorOutOfRange    configResponseStatus = "errorOutOfRange"
+	ResponseStatusErrorNotFound      configResponseStatus = "errorNotFound"
+	ResponseStatusErrorFlash         configResponseStatus = "errorFlash"
+	ResponseStatusErrorNoCallBack    configResponseStatus = "errorNoCallBack"
+	ResponseStatusErrorNoSpace       configResponseStatus = "errorNoSpace"
+	ResponseStatusErrorNoReadAccess  configResponseStatus = "errorNoReadAccess"
+	ResponseStatusErrorNoWriteAccess configResponseStatus = "errorNoWriteAccess"
+)
+
+type configResponseStatus string
+
 type UpdateConfig struct {
 	TransactionId int    `json:"-"`
 	TxPower       uint   `json:"txPower,omitempty"`
@@ -69,18 +88,19 @@ func (r *UpdateConfig) MarshalJSON() ([]byte, error) {
 }
 
 type ConfigResponse struct {
-	ShortAddr            string `json:"-"`
-	ExtAddr              string `json:"-"`
-	Rssi                 int    `json:"-"`
-	TransactionId        int    `json:"-"`
-	TxPower              uint   `json:"txPower,omitempty"`
-	DeviceType           string `json:"deviceType,omitempty"`
-	DeviceRole           string `json:"deviceRole,omitempty"`
-	FrontBreakout        string `json:"frontBreakout,omitempty"`
-	BackBreakout         string `json:"backBreakout,omitempty"`
-	RecloseDelay         uint   `json:"recloseDelay,omitempty"`
-	StatusMsgFlags       uint   `json:"statusMsgFlags,omitempty"`
-	StatusUpdateInterval uint16 `json:"statusUpdateInterval,omitempty"`
+	ShortAddr            string               `json:"-"`
+	ExtAddr              string               `json:"-"`
+	Rssi                 int                  `json:"-"`
+	TransactionId        int                  `json:"-"`
+	Status               configResponseStatus `json:"status"`
+	TxPower              uint                 `json:"txPower,omitempty"`
+	DeviceType           string               `json:"deviceType,omitempty"`
+	DeviceRole           string               `json:"deviceRole,omitempty"`
+	FrontBreakout        string               `json:"frontBreakout,omitempty"`
+	BackBreakout         string               `json:"backBreakout,omitempty"`
+	RecloseDelay         uint                 `json:"recloseDelay,omitempty"`
+	StatusMsgFlags       uint                 `json:"statusMsgFlags,omitempty"`
+	StatusUpdateInterval uint16               `json:"statusUpdateInterval,omitempty"`
 	//NfcEncryptionKey        [16]byte `json:"nfcEncryptionKey,omitempty"`
 	InstalledRelayModuleIds [16]uint `json:"installedRelayModuleIds,omitempty"`
 	ExternalRelayMode       string   `json:"externalRelayMode,omitempty"`
@@ -110,6 +130,15 @@ func (r *ConfigResponse) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
+	switch r.Status {
+	case ResponseStatusNone, ResponseStatusCreateOK, ResponseStatusReadOK, ResponseStatusUpdateOK, ResponseStatusDeleteOK,
+		ResponseStatusConfigSizeError, ResponseStatusError, ResponseStatusErrorOutOfRange, ResponseStatusErrorNotFound,
+		ResponseStatusErrorFlash, ResponseStatusErrorNoCallBack, ResponseStatusErrorNoSpace, ResponseStatusErrorNoReadAccess,
+		ResponseStatusErrorNoWriteAccess:
+	default:
+		return InvalidConfigResponseStatus{r.Status}
+	}
+
 	r.TransactionId = e.TransactionId
 	r.ShortAddr = e.ShortAddr
 	r.ExtAddr = e.ExtAddr
@@ -119,6 +148,15 @@ func (r *ConfigResponse) UnmarshalJSON(bytes []byte) error {
 }
 
 func (r *ConfigResponse) MarshalJSON() ([]byte, error) {
+	switch r.Status {
+	case ResponseStatusNone, ResponseStatusCreateOK, ResponseStatusReadOK, ResponseStatusUpdateOK, ResponseStatusDeleteOK,
+		ResponseStatusConfigSizeError, ResponseStatusError, ResponseStatusErrorOutOfRange, ResponseStatusErrorNotFound,
+		ResponseStatusErrorFlash, ResponseStatusErrorNoCallBack, ResponseStatusErrorNoSpace, ResponseStatusErrorNoReadAccess,
+		ResponseStatusErrorNoWriteAccess:
+	default:
+		return nil, InvalidConfigResponseStatus{r.Status}
+	}
+
 	type configResponse ConfigResponse
 
 	var e response
