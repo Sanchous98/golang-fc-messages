@@ -37,7 +37,7 @@ type UpdateConfig struct {
 	RecloseDelay            uint   `json:"recloseDelay,omitempty"`
 	StatusMsgFlags          uint   `json:"statusMsgFlags,omitempty"`
 	StatusUpdateInterval    uint16 `json:"statusUpdateInterval,omitempty"`
-	NfcEncryptionKey        []byte `json:"nfcEncryptionKey,omitempty"`
+	NfcEncryptionKey        string `json:"nfcEncryptionKey,omitempty"`
 	InstalledRelayModuleIds []uint `json:"installedRelayModuleIds,omitempty"`
 	ExternalRelayMode       string `json:"externalRelayMode,omitempty"`
 	SlaveFwAddress          uint   `json:"slaveFwAddress,omitempty"`
