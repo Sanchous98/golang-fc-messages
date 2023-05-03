@@ -35,10 +35,10 @@ const (
 type AuthRequest struct {
 	TransactionId int        `json:"-"`
 	HashKey       string     `json:"hashKey"`
-	Timestamp     int64      `json:"timestamp"`
+	Timestamp     int64      `json:"timestamp,omitempty"`
 	AuthType      authType   `json:"authType"`
 	AuthStatus    authStatus `json:"authStatus"`
-	ChannelIds    []int      `json:"channelIds"`
+	ChannelIds    []int      `json:"channelIds,omitempty"`
 }
 
 func (a *AuthRequest) MarshalJSON() ([]byte, error) {
