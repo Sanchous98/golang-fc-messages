@@ -42,10 +42,10 @@ type UpdateConfig struct {
 	ExternalRelayMode       string `json:"externalRelayMode,omitempty"`
 	SlaveFwAddress          uint   `json:"slaveFwAddress,omitempty"`
 	BuzzerVolume            string `json:"buzzerVolume,omitempty"`
-	EmvCoPrivateKey         string `json:"emvCoPrivateKey,omitempty"`
-	EmvCoKeyVersion         string `json:"emvCoKeyVersion,omitempty"`
-	EmvCoCollectorId        string `json:"emvCoCollectorId,omitempty"`
-	GoogleSmartTapEnabled   bool   `json:"googleSmartTapEnabled,omitempty"`
+	EmvCoPrivateKey         string `json:"emvCoPrivateKey"`
+	EmvCoKeyVersion         string `json:"emvCoKeyVersion"`
+	EmvCoCollectorId        string `json:"emvCoCollectorId"`
+	GoogleSmartTapEnabled   bool   `json:"googleSmartTapEnabled"`
 }
 
 func (r *UpdateConfig) UnmarshalJSON(bytes []byte) error {
