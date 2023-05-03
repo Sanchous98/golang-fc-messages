@@ -17,7 +17,7 @@ const (
 type transactionIdAction string
 
 type TransactionIdAction struct {
-	Action transactionIdAction `json:"transactionIdAction"`
+	Action transactionIdAction `json:"action"`
 }
 
 func (t *TransactionIdAction) UnmarshalJSON(bytes []byte) error {

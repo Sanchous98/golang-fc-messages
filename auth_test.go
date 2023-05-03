@@ -61,7 +61,6 @@ func FuzzAuthRequestMarshal(f *testing.F) {
 					"timestamp":  timestamp,
 					"authType":   aT,
 					"authStatus": aS,
-					"channelIds": nil,
 				},
 				"transactionId": transactionId,
 			},
