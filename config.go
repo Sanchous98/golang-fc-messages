@@ -34,18 +34,18 @@ type UpdateConfig struct {
 	DeviceRole    string `json:"deviceRole,omitempty"`
 	//FrontBreakout           string   `json:"frontBreakout,omitempty"`
 	//BackBreakout            string   `json:"backBreakout,omitempty"`
-	RecloseDelay            uint     `json:"recloseDelay,omitempty"`
-	StatusMsgFlags          uint     `json:"statusMsgFlags,omitempty"`
-	StatusUpdateInterval    uint16   `json:"statusUpdateInterval,omitempty"`
-	NfcEncryptionKey        []byte   `json:"nfcEncryptionKey,omitempty"`
-	InstalledRelayModuleIds [16]uint `json:"installedRelayModuleIds,omitempty"`
-	ExternalRelayMode       string   `json:"externalRelayMode,omitempty"`
-	SlaveFwAddress          uint     `json:"slaveFwAddress,omitempty"`
-	BuzzerVolume            string   `json:"buzzerVolume,omitempty"`
-	EmvCoPrivateKey         string   `json:"emvCoPrivateKey,omitempty"`
-	EmvCoKeyVersion         string   `json:"emvCoKeyVersion,omitempty"`
-	EmvCoCollectorId        string   `json:"emvCoCollectorId,omitempty"`
-	GoogleSmartTapEnabled   bool     `json:"googleSmartTapEnabled,omitempty"`
+	RecloseDelay            uint   `json:"recloseDelay,omitempty"`
+	StatusMsgFlags          uint   `json:"statusMsgFlags,omitempty"`
+	StatusUpdateInterval    uint16 `json:"statusUpdateInterval,omitempty"`
+	NfcEncryptionKey        []byte `json:"nfcEncryptionKey,omitempty"`
+	InstalledRelayModuleIds []uint `json:"installedRelayModuleIds,omitempty"`
+	ExternalRelayMode       string `json:"externalRelayMode,omitempty"`
+	SlaveFwAddress          uint   `json:"slaveFwAddress,omitempty"`
+	BuzzerVolume            string `json:"buzzerVolume,omitempty"`
+	EmvCoPrivateKey         string `json:"emvCoPrivateKey,omitempty"`
+	EmvCoKeyVersion         string `json:"emvCoKeyVersion,omitempty"`
+	EmvCoCollectorId        string `json:"emvCoCollectorId,omitempty"`
+	GoogleSmartTapEnabled   bool   `json:"googleSmartTapEnabled,omitempty"`
 }
 
 func (r *UpdateConfig) UnmarshalJSON(bytes []byte) error {
@@ -102,10 +102,10 @@ type ConfigResponse struct {
 	StatusMsgFlags       uint                 `json:"statusMsgFlags,omitempty"`
 	StatusUpdateInterval uint16               `json:"statusUpdateInterval,omitempty"`
 	//NfcEncryptionKey        [16]byte `json:"nfcEncryptionKey,omitempty"`
-	InstalledRelayModuleIds [16]uint `json:"installedRelayModuleIds,omitempty"`
-	ExternalRelayMode       string   `json:"externalRelayMode,omitempty"`
-	SlaveFwAddress          uint     `json:"slaveFwAddress,omitempty"`
-	BuzzerVolume            string   `json:"buzzerVolume,omitempty"`
+	InstalledRelayModuleIds []uint `json:"installedRelayModuleIds,omitempty"`
+	ExternalRelayMode       string `json:"externalRelayMode,omitempty"`
+	SlaveFwAddress          uint   `json:"slaveFwAddress,omitempty"`
+	BuzzerVolume            string `json:"buzzerVolume,omitempty"`
 	//EmvCoPrivateKey         string `json:"emvCoPrivateKey,omitempty"`
 	EmvCoKeyVersion       string `json:"emvCoKeyVersion,omitempty"`
 	EmvCoCollectorId      string `json:"emvCoCollectorId,omitempty"`
