@@ -5,6 +5,7 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"math/rand"
 	"strings"
 	"testing"
 )
@@ -120,4 +121,53 @@ func FuzzReadConfigUnmarshal(f *testing.F) {
 			GoogleSmartTapEnabled:   googleSmartTapEnabled,
 		})
 	})
+}
+
+func TestReadConfig_InitFromKeys(t *testing.T) {
+	read := ReadConfig{}
+	keys := []string{
+		"txPower",
+		"deviceType",
+		"deviceRole",
+		"frontBreakout",
+		"backBreakout",
+		"recloseDelay",
+		"statusMsgFlags",
+		"statusUpdateInterval",
+		"nfcEncryptionKey",
+		"installedRelayModuleIds",
+		"externalRelayMode",
+		"slaveFwAddress",
+		"buzzerVolume",
+		"emvCoPrivateKey",
+		"emvCoKeyVersion",
+		"emvCoCollectorId",
+		"googleSmartTapEnabled",
+	}
+
+	rand.Shuffle(len(keys), func(i, j int) {
+		keys[i], keys[j] = keys[j], keys[i]
+	})
+
+	read.InitFromKeys(keys)
+
+	assert.Equal(t, ReadConfig{
+		TxPower:                 true,
+		DeviceType:              true,
+		DeviceRole:              true,
+		FrontBreakout:           true,
+		BackBreakout:            true,
+		RecloseDelay:            true,
+		StatusMsgFlags:          true,
+		StatusUpdateInterval:    true,
+		NfcEncryptionKey:        true,
+		InstalledRelayModuleIds: true,
+		ExternalRelayMode:       true,
+		SlaveFwAddress:          true,
+		BuzzerVolume:            true,
+		EmvCoPrivateKey:         true,
+		EmvCoKeyVersion:         true,
+		EmvCoCollectorId:        true,
+		GoogleSmartTapEnabled:   true,
+	}, read)
 }

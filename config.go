@@ -1,6 +1,8 @@
 package messages
 
-import "github.com/goccy/go-json"
+import (
+	"github.com/goccy/go-json"
+)
 
 const (
 	DeviceConfigReadEvent     eventType = "deviceConfigRead"
@@ -176,7 +178,6 @@ func (r *ConfigResponse) MarshalJSON() ([]byte, error) {
 }
 
 type ReadConfig struct {
-	TransactionId           int  `json:"-"`
 	TxPower                 bool `json:"txPower,omitempty"`
 	DeviceType              bool `json:"deviceType,omitempty"`
 	DeviceRole              bool `json:"deviceRole,omitempty"`
@@ -194,6 +195,50 @@ type ReadConfig struct {
 	EmvCoKeyVersion         bool `json:"emvCoKeyVersion,omitempty"`
 	EmvCoCollectorId        bool `json:"emvCoCollectorId,omitempty"`
 	GoogleSmartTapEnabled   bool `json:"googleSmartTapEnabled,omitempty"`
+	TransactionId           int  `json:"-"`
+}
+
+func (r *ReadConfig) InitFromKeys(keys []string) *ReadConfig {
+	for _, key := range keys {
+		switch key {
+		case "txPower":
+			r.TxPower = true
+		case "deviceType":
+			r.DeviceType = true
+		case "deviceRole":
+			r.DeviceRole = true
+		case "frontBreakout":
+			r.FrontBreakout = true
+		case "backBreakout":
+			r.BackBreakout = true
+		case "recloseDelay":
+			r.RecloseDelay = true
+		case "statusMsgFlags":
+			r.StatusMsgFlags = true
+		case "statusUpdateInterval":
+			r.StatusUpdateInterval = true
+		case "nfcEncryptionKey":
+			r.NfcEncryptionKey = true
+		case "installedRelayModuleIds":
+			r.InstalledRelayModuleIds = true
+		case "externalRelayMode":
+			r.ExternalRelayMode = true
+		case "slaveFwAddress":
+			r.SlaveFwAddress = true
+		case "buzzerVolume":
+			r.BuzzerVolume = true
+		case "emvCoPrivateKey":
+			r.EmvCoPrivateKey = true
+		case "emvCoKeyVersion":
+			r.EmvCoKeyVersion = true
+		case "emvCoCollectorId":
+			r.EmvCoCollectorId = true
+		case "googleSmartTapEnabled":
+			r.GoogleSmartTapEnabled = true
+		}
+	}
+
+	return r
 }
 
 func (r *ReadConfig) UnmarshalJSON(bytes []byte) error {
