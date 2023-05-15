@@ -30,24 +30,25 @@ const (
 type configResponseStatus string
 
 type UpdateConfig struct {
-	TransactionId int    `json:"-"`
-	TxPower       uint   `json:"txPower,omitempty"`
-	DeviceType    string `json:"deviceType,omitempty"`
-	DeviceRole    string `json:"deviceRole,omitempty"`
+	TransactionId int     `json:"-"`
+	TxPower       *uint   `json:"txPower,omitempty"`
+	DeviceType    *string `json:"deviceType,omitempty"`
+	DeviceRole    *string `json:"deviceRole,omitempty"`
 	//FrontBreakout           string   `json:"frontBreakout,omitempty"`
 	//BackBreakout            string   `json:"backBreakout,omitempty"`
-	RecloseDelay            uint   `json:"recloseDelay,omitempty"`
-	StatusMsgFlags          uint   `json:"statusMsgFlags,omitempty"`
-	StatusUpdateInterval    uint16 `json:"statusUpdateInterval,omitempty"`
-	NfcEncryptionKey        string `json:"nfcEncryptionKey,omitempty"`
-	InstalledRelayModuleIds []uint `json:"installedRelayModuleIds,omitempty"`
-	ExternalRelayMode       string `json:"externalRelayMode,omitempty"`
-	SlaveFwAddress          uint   `json:"slaveFwAddress,omitempty"`
-	BuzzerVolume            string `json:"buzzerVolume,omitempty"`
-	EmvCoPrivateKey         string `json:"emvCoPrivateKey"`
-	EmvCoKeyVersion         string `json:"emvCoKeyVersion"`
-	EmvCoCollectorId        string `json:"emvCoCollectorId"`
-	GoogleSmartTapEnabled   bool   `json:"googleSmartTapEnabled"`
+	RecloseDelay            *uint   `json:"recloseDelay,omitempty"`
+	StatusMsgFlags          *uint   `json:"statusMsgFlags,omitempty"`
+	StatusUpdateInterval    *uint16 `json:"statusUpdateInterval,omitempty"`
+	NfcPiccEncryptionKey    *string `json:"nfcPiccEncryptionKey,omitempty"`
+	NfcEncryptionKey        *string `json:"nfcEncryptionKey,omitempty"`
+	InstalledRelayModuleIds []uint  `json:"installedRelayModuleIds,omitempty"`
+	ExternalRelayMode       *string `json:"externalRelayMode,omitempty"`
+	SlaveFwAddress          *uint   `json:"slaveFwAddress,omitempty"`
+	BuzzerVolume            *string `json:"buzzerVolume,omitempty"`
+	EmvCoPrivateKey         *string `json:"emvCoPrivateKey,omitempty"`
+	EmvCoKeyVersion         *string `json:"emvCoKeyVersion,omitempty"`
+	EmvCoCollectorId        *string `json:"emvCoCollectorId,omitempty"`
+	GoogleSmartTapEnabled   *bool   `json:"googleSmartTapEnabled,omitempty"`
 }
 
 func (r *UpdateConfig) UnmarshalJSON(bytes []byte) error {
@@ -95,23 +96,24 @@ type ConfigResponse struct {
 	Rssi                 int                  `json:"-"`
 	TransactionId        int                  `json:"-"`
 	Status               configResponseStatus `json:"status"`
-	TxPower              uint                 `json:"txPower,omitempty"`
-	DeviceType           string               `json:"deviceType,omitempty"`
-	DeviceRole           string               `json:"deviceRole,omitempty"`
-	FrontBreakout        string               `json:"frontBreakout,omitempty"`
-	BackBreakout         string               `json:"backBreakout,omitempty"`
-	RecloseDelay         uint                 `json:"recloseDelay,omitempty"`
-	StatusMsgFlags       uint                 `json:"statusMsgFlags,omitempty"`
-	StatusUpdateInterval uint16               `json:"statusUpdateInterval,omitempty"`
+	TxPower              *uint                `json:"txPower,omitempty"`
+	DeviceType           *string              `json:"deviceType,omitempty"`
+	DeviceRole           *string              `json:"deviceRole,omitempty"`
+	FrontBreakout        *string              `json:"frontBreakout,omitempty"`
+	BackBreakout         *string              `json:"backBreakout,omitempty"`
+	RecloseDelay         *uint                `json:"recloseDelay,omitempty"`
+	StatusMsgFlags       *uint                `json:"statusMsgFlags,omitempty"`
+	StatusUpdateInterval *uint16              `json:"statusUpdateInterval,omitempty"`
+	//NfcPiccEncryptionKey    [16]byte `json:"nfcPiccEncryptionKey,omitempty"`
 	//NfcEncryptionKey        [16]byte `json:"nfcEncryptionKey,omitempty"`
-	InstalledRelayModuleIds []uint `json:"installedRelayModuleIds,omitempty"`
-	ExternalRelayMode       string `json:"externalRelayMode,omitempty"`
-	SlaveFwAddress          uint   `json:"slaveFwAddress,omitempty"`
-	BuzzerVolume            string `json:"buzzerVolume,omitempty"`
+	InstalledRelayModuleIds []uint  `json:"installedRelayModuleIds,omitempty"`
+	ExternalRelayMode       *string `json:"externalRelayMode,omitempty"`
+	SlaveFwAddress          *uint   `json:"slaveFwAddress,omitempty"`
+	BuzzerVolume            *string `json:"buzzerVolume,omitempty"`
 	//EmvCoPrivateKey         string `json:"emvCoPrivateKey,omitempty"`
-	EmvCoKeyVersion       string `json:"emvCoKeyVersion,omitempty"`
-	EmvCoCollectorId      string `json:"emvCoCollectorId,omitempty"`
-	GoogleSmartTapEnabled bool   `json:"googleSmartTapEnabled,omitempty"`
+	EmvCoKeyVersion       *string `json:"emvCoKeyVersion,omitempty"`
+	EmvCoCollectorId      *string `json:"emvCoCollectorId,omitempty"`
+	GoogleSmartTapEnabled *bool   `json:"googleSmartTapEnabled,omitempty"`
 }
 
 func (r *ConfigResponse) UnmarshalJSON(bytes []byte) error {
@@ -186,6 +188,7 @@ type ReadConfig struct {
 	RecloseDelay            bool `json:"recloseDelay,omitempty"`
 	StatusMsgFlags          bool `json:"statusMsgFlags,omitempty"`
 	StatusUpdateInterval    bool `json:"statusUpdateInterval,omitempty"`
+	NfcPiccEncryptionKey    bool `json:"nfcPiccEncryptionKey,omitempty"`
 	NfcEncryptionKey        bool `json:"nfcEncryptionKey,omitempty"`
 	InstalledRelayModuleIds bool `json:"installedRelayModuleIds,omitempty"`
 	ExternalRelayMode       bool `json:"externalRelayMode,omitempty"`
@@ -219,6 +222,8 @@ func (r *ReadConfig) InitFromKeys(keys []string) *ReadConfig {
 			r.StatusUpdateInterval = true
 		case "nfcEncryptionKey":
 			r.NfcEncryptionKey = true
+		case "nfcPiccEncryptionKey":
+			r.NfcPiccEncryptionKey = true
 		case "installedRelayModuleIds":
 			r.InstalledRelayModuleIds = true
 		case "externalRelayMode":
