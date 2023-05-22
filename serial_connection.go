@@ -17,7 +17,7 @@ const (
 type serialConnectionAction string
 
 type SerialConnectionRequest struct {
-	TransactionId int                    `json:"-"`
+	TransactionId uint32                 `json:"-"`
 	Action        serialConnectionAction `json:"transactionIdAction"`
 }
 

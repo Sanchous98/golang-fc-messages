@@ -23,7 +23,7 @@ const (
 type firmwareUpgradeStatus string
 
 type FirmwareVersionRequest struct {
-	TransactionId int `json:"-"`
+	TransactionId uint32 `json:"-"`
 }
 
 func (f *FirmwareVersionRequest) UnmarshalJSON(bytes []byte) error {
@@ -101,7 +101,7 @@ func (f *FirmwareVersionResponse) MarshalJSON() ([]byte, error) {
 }
 
 type FirmwareVersionUpgradeRequest struct {
-	TransactionId int    `json:"-"`
+	TransactionId uint32 `json:"-"`
 	FileName      string `json:"fileName"`
 }
 
@@ -147,7 +147,7 @@ type FirmwareVersionUpgradeResponse struct {
 	ShortAddr     string                `json:"-"`
 	ExtAddr       string                `json:"-"`
 	Rssi          int                   `json:"-"`
-	TransactionId int                   `json:"-"`
+	TransactionId uint32                `json:"-"`
 	ErrorCode     int                   `json:"errorCode"`
 	Status        firmwareUpgradeStatus `json:"status"`
 }
@@ -214,7 +214,7 @@ type FirmwareBlockResponse struct {
 	ShortAddr     string `json:"-"`
 	ExtAddr       string `json:"-"`
 	Rssi          int    `json:"-"`
-	TransactionId int    `json:"-"`
+	TransactionId uint32 `json:"-"`
 	BlockNr       int    `json:"blockNr"`
 	TotalBlocksNr int    `json:"totalBlocksNr"`
 }
@@ -264,7 +264,7 @@ func (f *FirmwareBlockResponse) MarshalJSON() ([]byte, error) {
 }
 
 type FirmwareUpdateAbort struct {
-	TransactionId int `json:"-"`
+	TransactionId uint32 `json:"-"`
 }
 
 func (f *FirmwareUpdateAbort) UnmarshalJSON(bytes []byte) error {

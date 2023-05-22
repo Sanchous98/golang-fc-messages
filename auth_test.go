@@ -13,11 +13,11 @@ import (
 func FuzzAuthRequestMarshal(f *testing.F) {
 	for _, aT := range [...]authType{NoneType, NFCType, QRType, MobileType, NumPadType} {
 		for _, aS := range [...]authStatus{NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus} {
-			f.Add(rand.Int(), rand.Int(), rand.Int63(), string(aT), string(aS))
+			f.Add(rand.Uint32(), rand.Int(), rand.Int63(), string(aT), string(aS))
 		}
 	}
 
-	f.Fuzz(func(t *testing.T, transactionId, hashKey int, timestamp int64, aT string, aS string) {
+	f.Fuzz(func(t *testing.T, transactionId uint32, hashKey int, timestamp int64, aT string, aS string) {
 		value := AuthRequest{
 			TransactionId: transactionId,
 			HashKey:       fmt.Sprintf("%#x", hashKey),
@@ -72,11 +72,11 @@ func FuzzAuthRequestMarshal(f *testing.F) {
 func FuzzAuthRequestUnmarshal(f *testing.F) {
 	for _, aT := range [...]authType{NoneType, NFCType, QRType, MobileType, NumPadType} {
 		for _, aS := range [...]authStatus{NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus} {
-			f.Add(string(AuthEventType), rand.Int(), rand.Int(), rand.Int63(), string(aT), string(aS))
+			f.Add(string(AuthEventType), rand.Uint32(), rand.Int(), rand.Int63(), string(aT), string(aS))
 		}
 	}
 
-	f.Fuzz(func(t *testing.T, eT string, transactionId, hashKey int, timestamp int64, aT string, aS string) {
+	f.Fuzz(func(t *testing.T, eT string, transactionId uint32, hashKey int, timestamp int64, aT string, aS string) {
 		j, _ := json.Marshal(map[string]any{
 			"event": map[string]any{
 				"eventType": eT,
@@ -128,11 +128,11 @@ func FuzzAuthRequestUnmarshal(f *testing.F) {
 func FuzzAuthResponseMarshal(f *testing.F) {
 	for _, aT := range [...]authType{NoneType, NFCType, QRType, MobileType, NumPadType} {
 		for _, aS := range [...]authStatus{NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus} {
-			f.Add(rand.Int(), rand.Int(), rand.Int(), rand.Int(), rand.Int(), rand.Int63(), string(aT), string(aS))
+			f.Add(rand.Int(), rand.Int(), rand.Int(), rand.Uint32(), rand.Int(), rand.Int63(), string(aT), string(aS))
 		}
 	}
 
-	f.Fuzz(func(t *testing.T, shortAddr, extAddr, rssi, transactionId, hashKey int, timestamp int64, aT string, aS string) {
+	f.Fuzz(func(t *testing.T, shortAddr, extAddr, rssi int, transactionId uint32, hashKey int, timestamp int64, aT string, aS string) {
 		value := AuthResponse{
 			ExtAddr:       fmt.Sprintf("%#x", extAddr),
 			ShortAddr:     fmt.Sprintf("%#x", shortAddr),
@@ -192,11 +192,11 @@ func FuzzAuthResponseMarshal(f *testing.F) {
 func FuzzAuthResponseUnmarshal(f *testing.F) {
 	for _, aT := range [...]authType{NoneType, NFCType, QRType, MobileType, NumPadType} {
 		for _, aS := range [...]authStatus{NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus} {
-			f.Add(string(AuthEventType), rand.Int(), rand.Int(), rand.Int(), rand.Int(), rand.Int(), rand.Int63(), string(aT), string(aS))
+			f.Add(string(AuthEventType), rand.Int(), rand.Int(), rand.Int(), rand.Uint32(), rand.Int(), rand.Int63(), string(aT), string(aS))
 		}
 	}
 
-	f.Fuzz(func(t *testing.T, eT string, shortAddr, extAddr, rssi, transactionId, hashKey int, timestamp int64, aT string, aS string) {
+	f.Fuzz(func(t *testing.T, eT string, shortAddr, extAddr, rssi int, transactionId uint32, hashKey int, timestamp int64, aT string, aS string) {
 		j, _ := json.Marshal(map[string]any{
 			"ext_addr":   fmt.Sprintf("%#x", extAddr),
 			"short_addr": fmt.Sprintf("%#x", shortAddr),

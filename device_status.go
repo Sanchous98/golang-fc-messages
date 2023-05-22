@@ -20,7 +20,7 @@ const (
 )
 
 type DeviceStatusRequest struct {
-	TransactionId int
+	TransactionId uint32
 }
 
 func (d *DeviceStatusRequest) UnmarshalJSON(bytes []byte) error {
@@ -52,7 +52,7 @@ type DeviceStatusResponse struct {
 	ShortAddr        string             `json:"-"`
 	ExtAddr          string             `json:"-"`
 	Rssi             int                `json:"-"`
-	TransactionId    int                `json:"-"`
+	TransactionId    uint32             `json:"-"`
 	Reason           deviceStatusReason `json:"reason"`
 	Time             int64              `json:"time"`
 	BatteryLevel     int                `json:"batteryLevel"`

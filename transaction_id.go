@@ -72,7 +72,7 @@ type TransactionIdResponse struct {
 	ShortAddr           string `json:"-"`
 	ExtAddr             string `json:"-"`
 	Rssi                int    `json:"-"`
-	DeviceTransactionId int    `json:"deviceTransactionId"`
+	DeviceTransactionId uint32 `json:"deviceTransactionId"`
 }
 
 func (t *TransactionIdResponse) UnmarshalJSON(bytes []byte) error {

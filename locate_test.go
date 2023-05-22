@@ -5,11 +5,12 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"math/rand"
 	"testing"
 )
 
 func FuzzLocateEventMarshal(f *testing.F) {
-	f.Fuzz(func(t *testing.T, transactionId int) {
+	f.Fuzz(func(t *testing.T, transactionId uint32) {
 		value := &LocateRequest{TransactionId: transactionId}
 		result, err := json.Marshal(value)
 
@@ -19,9 +20,9 @@ func FuzzLocateEventMarshal(f *testing.F) {
 }
 
 func FuzzLocateUnmarshal(f *testing.F) {
-	f.Add(string(LocateRequestEventType), 0)
+	f.Add(string(LocateRequestEventType), rand.Uint32())
 
-	f.Fuzz(func(t *testing.T, eT string, transactionId int) {
+	f.Fuzz(func(t *testing.T, eT string, transactionId uint32) {
 		var e LocateRequest
 		value := []byte(fmt.Sprintf(`{"event":{"eventType":%q,"payload":{},"transactionId":%d}}`, eT, transactionId))
 

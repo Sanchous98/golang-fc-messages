@@ -5,6 +5,7 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"math/rand"
 	"testing"
 )
 
@@ -52,7 +53,7 @@ func FuzzTransactionIdActionUnmarshal(f *testing.F) {
 }
 
 func FuzzTransactionIdResponseMarshal(f *testing.F) {
-	f.Fuzz(func(t *testing.T, deviceTransactionId int) {
+	f.Fuzz(func(t *testing.T, deviceTransactionId uint32) {
 		value := &TransactionIdResponse{DeviceTransactionId: deviceTransactionId}
 		result, err := json.Marshal(value)
 
@@ -62,9 +63,9 @@ func FuzzTransactionIdResponseMarshal(f *testing.F) {
 }
 
 func FuzzTransactionIdResponseUnmarshal(f *testing.F) {
-	f.Add(string(TransactionIdRsp), 0)
+	f.Add(string(TransactionIdRsp), rand.Uint32())
 
-	f.Fuzz(func(t *testing.T, eT string, deviceTransactionId int) {
+	f.Fuzz(func(t *testing.T, eT string, deviceTransactionId uint32) {
 		value := []byte(fmt.Sprintf(`{"short_addr":"0x2","ext_addr":"0x124b001cbd4efa","rssi":-45,"eventType":%q,"payload":{"deviceTransactionId":%d},"transactionId":0}`, eT, deviceTransactionId))
 		var j TransactionIdResponse
 		err := json.Unmarshal(value, &j)

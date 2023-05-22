@@ -88,7 +88,7 @@ func (s *StorageData) MarshalJSON() ([]byte, error) {
 }
 
 type StorageAddKey struct {
-	TransactionId int `json:"-"`
+	TransactionId uint32 `json:"-"`
 	StorageData   `json:","`
 }
 
@@ -131,7 +131,7 @@ func (s *StorageAddKey) MarshalJSON() ([]byte, error) {
 }
 
 type StorageUpdateKey struct {
-	TransactionId int `json:"-"`
+	TransactionId uint32 `json:"-"`
 	StorageData   `json:","`
 }
 
@@ -174,7 +174,7 @@ func (s *StorageUpdateKey) MarshalJSON() ([]byte, error) {
 }
 
 type StorageGetKey struct {
-	TransactionId int    `json:"-"`
+	TransactionId uint32 `json:"-"`
 	HashKey       string `json:"hashKey"`
 }
 
@@ -217,7 +217,7 @@ func (s *StorageGetKey) MarshalJSON() ([]byte, error) {
 }
 
 type StorageDeleteKey struct {
-	TransactionId int    `json:"-"`
+	TransactionId uint32 `json:"-"`
 	HashKey       string `json:"hashKey"`
 }
 
@@ -263,7 +263,7 @@ type StorageResponse struct {
 	ShortAddr     string `json:"-"`
 	ExtAddr       string `json:"-"`
 	Rssi          int    `json:"-"`
-	TransactionId int    `json:"-"`
+	TransactionId uint32 `json:"-"`
 	StorageData   `json:","`
 }
 

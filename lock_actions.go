@@ -28,9 +28,9 @@ const (
 type lockStatus string
 
 type LockAuto struct {
-	TransactionId int   `json:"-"`
-	RecloseDelay  uint  `json:"recloseDelay"`
-	ChannelIds    []int `json:"channelIds,omitempty"`
+	TransactionId uint32 `json:"-"`
+	RecloseDelay  uint   `json:"recloseDelay"`
+	ChannelIds    []int  `json:"channelIds,omitempty"`
 }
 
 func (l *LockAuto) UnmarshalJSON(bytes []byte) error {
@@ -75,7 +75,7 @@ type LockResponse struct {
 	ShortAddr        string     `json:"-"`
 	ExtAddr          string     `json:"-"`
 	Rssi             int        `json:"-"`
-	TransactionId    int        `json:"-"`
+	TransactionId    uint32     `json:"-"`
 	LockActionStatus lockStatus `json:"lockActionStatus"`
 	ChannelIds       []int      `json:"channelIds,omitempty"`
 }
@@ -134,7 +134,7 @@ func (l *LockResponse) MarshalJSON() ([]byte, error) {
 }
 
 type LockClose struct {
-	TransactionId int
+	TransactionId uint32
 }
 
 func (l *LockClose) UnmarshalJSON(bytes []byte) error {
@@ -163,8 +163,8 @@ func (l *LockClose) MarshalJSON() ([]byte, error) {
 }
 
 type LockOpen struct {
-	TransactionId int   `json:"-"`
-	ChannelIds    []int `json:"channelIds,omitempty"`
+	TransactionId uint32 `json:"-"`
+	ChannelIds    []int  `json:"channelIds,omitempty"`
 }
 
 func (l *LockOpen) UnmarshalJSON(bytes []byte) error {
@@ -206,7 +206,7 @@ func (l *LockOpen) MarshalJSON() ([]byte, error) {
 }
 
 type LockOffline struct {
-	TransactionId int
+	TransactionId uint32
 }
 
 func (l *LockOffline) UnmarshalJSON(bytes []byte) error {

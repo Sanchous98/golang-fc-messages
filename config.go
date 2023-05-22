@@ -30,7 +30,7 @@ const (
 type configResponseStatus string
 
 type UpdateConfig struct {
-	TransactionId int     `json:"-"`
+	TransactionId uint32  `json:"-"`
 	TxPower       *uint   `json:"txPower,omitempty"`
 	DeviceType    *string `json:"deviceType,omitempty"`
 	DeviceRole    *string `json:"deviceRole,omitempty"`
@@ -94,7 +94,7 @@ type ConfigResponse struct {
 	ShortAddr            string               `json:"-"`
 	ExtAddr              string               `json:"-"`
 	Rssi                 int                  `json:"-"`
-	TransactionId        int                  `json:"-"`
+	TransactionId        uint32               `json:"-"`
 	Status               configResponseStatus `json:"status"`
 	TxPower              *uint                `json:"txPower,omitempty"`
 	DeviceType           *string              `json:"deviceType,omitempty"`
@@ -180,25 +180,25 @@ func (r *ConfigResponse) MarshalJSON() ([]byte, error) {
 }
 
 type ReadConfig struct {
-	TxPower                 bool `json:"txPower,omitempty"`
-	DeviceType              bool `json:"deviceType,omitempty"`
-	DeviceRole              bool `json:"deviceRole,omitempty"`
-	FrontBreakout           bool `json:"frontBreakout,omitempty"`
-	BackBreakout            bool `json:"backBreakout,omitempty"`
-	RecloseDelay            bool `json:"recloseDelay,omitempty"`
-	StatusMsgFlags          bool `json:"statusMsgFlags,omitempty"`
-	StatusUpdateInterval    bool `json:"statusUpdateInterval,omitempty"`
-	NfcPiccEncryptionKey    bool `json:"nfcPiccEncryptionKey,omitempty"`
-	NfcEncryptionKey        bool `json:"nfcEncryptionKey,omitempty"`
-	InstalledRelayModuleIds bool `json:"installedRelayModuleIds,omitempty"`
-	ExternalRelayMode       bool `json:"externalRelayMode,omitempty"`
-	SlaveFwAddress          bool `json:"slaveFwAddress,omitempty"`
-	BuzzerVolume            bool `json:"buzzerVolume,omitempty"`
-	EmvCoPrivateKey         bool `json:"emvCoPrivateKey,omitempty"`
-	EmvCoKeyVersion         bool `json:"emvCoKeyVersion,omitempty"`
-	EmvCoCollectorId        bool `json:"emvCoCollectorId,omitempty"`
-	GoogleSmartTapEnabled   bool `json:"googleSmartTapEnabled,omitempty"`
-	TransactionId           int  `json:"-"`
+	TxPower                 bool   `json:"txPower,omitempty"`
+	DeviceType              bool   `json:"deviceType,omitempty"`
+	DeviceRole              bool   `json:"deviceRole,omitempty"`
+	FrontBreakout           bool   `json:"frontBreakout,omitempty"`
+	BackBreakout            bool   `json:"backBreakout,omitempty"`
+	RecloseDelay            bool   `json:"recloseDelay,omitempty"`
+	StatusMsgFlags          bool   `json:"statusMsgFlags,omitempty"`
+	StatusUpdateInterval    bool   `json:"statusUpdateInterval,omitempty"`
+	NfcPiccEncryptionKey    bool   `json:"nfcPiccEncryptionKey,omitempty"`
+	NfcEncryptionKey        bool   `json:"nfcEncryptionKey,omitempty"`
+	InstalledRelayModuleIds bool   `json:"installedRelayModuleIds,omitempty"`
+	ExternalRelayMode       bool   `json:"externalRelayMode,omitempty"`
+	SlaveFwAddress          bool   `json:"slaveFwAddress,omitempty"`
+	BuzzerVolume            bool   `json:"buzzerVolume,omitempty"`
+	EmvCoPrivateKey         bool   `json:"emvCoPrivateKey,omitempty"`
+	EmvCoKeyVersion         bool   `json:"emvCoKeyVersion,omitempty"`
+	EmvCoCollectorId        bool   `json:"emvCoCollectorId,omitempty"`
+	GoogleSmartTapEnabled   bool   `json:"googleSmartTapEnabled,omitempty"`
+	TransactionId           uint32 `json:"-"`
 }
 
 func (r *ReadConfig) InitFromKeys(keys []string) *ReadConfig {

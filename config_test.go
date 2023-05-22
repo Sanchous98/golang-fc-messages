@@ -11,7 +11,7 @@ import (
 )
 
 func FuzzReadConfigMarshal(f *testing.F) {
-	f.Fuzz(func(t *testing.T, transactionId int, txPower, deviceType, deviceRole, frontBreakout, backBreakout, recloseDelay, statusMsgFlags, statusUpdateInterval, nfcEncryptionKey, installedRelayModuleIds, externalRelayMode, slaveFwAddress, buzzerVolume, emvCoPrivateKey, emvCoKeyVersion, emvCoCollectorId, googleSmartTapEnabled bool) {
+	f.Fuzz(func(t *testing.T, transactionId uint32, txPower, deviceType, deviceRole, frontBreakout, backBreakout, recloseDelay, statusMsgFlags, statusUpdateInterval, nfcEncryptionKey, installedRelayModuleIds, externalRelayMode, slaveFwAddress, buzzerVolume, emvCoPrivateKey, emvCoKeyVersion, emvCoCollectorId, googleSmartTapEnabled bool) {
 		var payload []string
 		// I don't use map, because map doesn't provide warranty, that data is ordered in the same way, as I wrote it.
 		// It's critical, because the marshaling result byte by byte
@@ -69,7 +69,7 @@ func FuzzReadConfigMarshal(f *testing.F) {
 }
 
 func FuzzReadConfigUnmarshal(f *testing.F) {
-	f.Fuzz(func(t *testing.T, transactionId int, txPower, deviceType, deviceRole, frontBreakout, backBreakout, recloseDelay, statusMsgFlags, statusUpdateInterval, nfcEncryptionKey, installedRelayModuleIds, externalRelayMode, slaveFwAddress, buzzerVolume, emvCoPrivateKey, emvCoKeyVersion, emvCoCollectorId, googleSmartTapEnabled bool) {
+	f.Fuzz(func(t *testing.T, transactionId uint32, txPower, deviceType, deviceRole, frontBreakout, backBreakout, recloseDelay, statusMsgFlags, statusUpdateInterval, nfcEncryptionKey, installedRelayModuleIds, externalRelayMode, slaveFwAddress, buzzerVolume, emvCoPrivateKey, emvCoKeyVersion, emvCoCollectorId, googleSmartTapEnabled bool) {
 		var payload []string
 		for _, value := range [][]any{
 			{"txPower", txPower},

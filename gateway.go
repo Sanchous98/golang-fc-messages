@@ -20,7 +20,7 @@ const (
 )
 
 type GetNetworkInfo struct {
-	TransactionId int
+	TransactionId uint32
 }
 
 func (g *GetNetworkInfo) UnmarshalJSON(bytes []byte) error {
@@ -70,7 +70,7 @@ type GetNetworkInfoResponse struct {
 }
 
 type UpdateNetworkState struct {
-	TransactionId int           `json:"-"`
+	TransactionId uint32        `json:"-"`
 	Action        networkAction `json:"action"`
 	Duration      time.Duration `json:"duration"`
 }
@@ -126,7 +126,7 @@ func (u *UpdateNetworkState) MarshalJSON() ([]byte, error) {
 }
 
 type RemoveDeviceRequest struct {
-	TransactionId int    `json:"-"`
+	TransactionId uint32 `json:"-"`
 	ExtAddress    string `json:"extAddress"`
 }
 

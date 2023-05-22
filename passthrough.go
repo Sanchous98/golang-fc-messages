@@ -10,7 +10,7 @@ type PassThroughEvent struct {
 				Data string `json:"data"`
 			} `json:"data"`
 		} `json:"payload"`
-		Status        int `json:"status"`
-		TransactionId int `json:"transactionId"`
+		Status        int    `json:"status"`
+		TransactionId uint32 `json:"transactionId"`
 	} `json:"event"`
 }

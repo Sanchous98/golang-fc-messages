@@ -5,7 +5,7 @@ import "github.com/goccy/go-json"
 const TimeSyncEventType eventType = "timeSync"
 
 type TimeSyncEvent struct {
-	TransactionId int
+	TransactionId uint32
 }
 
 func (t *TimeSyncEvent) MarshalJSON() ([]byte, error) {

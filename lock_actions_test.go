@@ -11,10 +11,10 @@ import (
 
 func FuzzLockResponseUnmarshal(f *testing.F) {
 	for _, lT := range [...]lockStatus{NoneLockStatus, ExtRelayStateLockStatus, LockOpenedLockStatus, LockClosedLockStatus, DriverOnLockStatus, ErrorLockAlreadyOpenLockStatus, ErrorLockAlreadyClosedLockStatus, ErrorDriverEnabledLockStatus, DeviceTypeUnknownLockStatus, OpenTimeoutLockStatus} {
-		f.Add(string(lT), rand.Int(), rand.Int(), rand.Int(), string(LockActionResponseEventType), rand.Int())
+		f.Add(string(lT), rand.Int(), rand.Int(), rand.Int(), string(LockActionResponseEventType), rand.Uint32())
 	}
 
-	f.Fuzz(func(t *testing.T, lockActionStatus string, shortAddr, extAddr, rssi int, eT string, transactionId int) {
+	f.Fuzz(func(t *testing.T, lockActionStatus string, shortAddr, extAddr, rssi int, eT string, transactionId uint32) {
 		test := []byte(fmt.Sprintf(`{"short_addr":"%#x","ext_addr":"%#x","rssi":%d,"eventType":%q,"payload":{"lockActionStatus":%q},"transactionId":%d}`, shortAddr, extAddr, rssi, eT, lockActionStatus, transactionId))
 
 		var rsp LockResponse

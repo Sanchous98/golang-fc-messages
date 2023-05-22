@@ -33,7 +33,7 @@ const (
 )
 
 type AuthRequest struct {
-	TransactionId int        `json:"-"`
+	TransactionId uint32     `json:"-"`
 	HashKey       string     `json:"hashKey"`
 	Timestamp     int64      `json:"timestamp,omitempty"`
 	AuthType      authType   `json:"authType"`
@@ -123,7 +123,7 @@ type AuthResponse struct {
 	ShortAddr     string     `json:"-"`
 	ExtAddr       string     `json:"-"`
 	Rssi          int        `json:"-"`
-	TransactionId int        `json:"-"`
+	TransactionId uint32     `json:"-"`
 	HashKey       string     `json:"hashKey"`
 	Timestamp     int64      `json:"timestamp"`
 	AuthType      authType   `json:"authType"`

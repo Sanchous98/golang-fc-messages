@@ -11,7 +11,7 @@ func (e eventType) Error() error { return InvalidEventType{e} }
 type event struct {
 	EventType     eventType       `json:"eventType"`
 	Payload       json.RawMessage `json:"payload"`
-	TransactionId int             `json:"transactionId"`
+	TransactionId uint32          `json:"transactionId"`
 }
 
 func (e *event) MarshalJSON() ([]byte, error) {
@@ -55,7 +55,7 @@ type response struct {
 	Rssi          int             `json:"rssi"`
 	EventType     eventType       `json:"eventType"`
 	Payload       json.RawMessage `json:"payload"`
-	TransactionId int             `json:"transactionId"`
+	TransactionId uint32          `json:"transactionId"`
 }
 
 func (r *response) MarshalJSON() ([]byte, error) {
