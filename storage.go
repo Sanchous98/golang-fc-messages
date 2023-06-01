@@ -89,7 +89,7 @@ func (s *StorageData) MarshalJSON() ([]byte, error) {
 
 type StorageAddKey struct {
 	TransactionId uint32 `json:"-"`
-	StorageData   `json:","`
+	StorageData
 }
 
 func (s *StorageAddKey) UnmarshalJSON(bytes []byte) error {
@@ -132,7 +132,7 @@ func (s *StorageAddKey) MarshalJSON() ([]byte, error) {
 
 type StorageUpdateKey struct {
 	TransactionId uint32 `json:"-"`
-	StorageData   `json:","`
+	StorageData
 }
 
 func (s *StorageUpdateKey) UnmarshalJSON(bytes []byte) error {
@@ -264,7 +264,7 @@ type StorageResponse struct {
 	ExtAddr       string `json:"-"`
 	Rssi          int    `json:"-"`
 	TransactionId uint32 `json:"-"`
-	StorageData   `json:","`
+	StorageData
 }
 
 func (s *StorageResponse) UnmarshalJSON(bytes []byte) error {

@@ -76,7 +76,6 @@ func (a *AuthRequest) MarshalJSON() ([]byte, error) {
 
 	return json.Marshal(&e)
 }
-
 func (a *AuthRequest) UnmarshalJSON(bytes []byte) error {
 	type auth AuthRequest
 

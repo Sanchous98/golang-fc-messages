@@ -55,10 +55,17 @@ type DeviceStatusResponse struct {
 	TransactionId    uint32             `json:"-"`
 	Reason           deviceStatusReason `json:"reason"`
 	Time             int64              `json:"time"`
+	Timezone         int                `json:"timezone"`
 	BatteryLevel     int                `json:"batteryLevel"`
 	BatteryLevelLoad int                `json:"batteryLevelLoad"`
 	NetworkState     int                `json:"networkState"`
 	AutoRequest      int                `json:"autoRequest"`
+	LockSensor       *struct {
+		Raw     byte `json:"raw"`
+		Privacy byte `json:"privacy"`
+		Handle  byte `json:"handle"`
+		Key     byte `json:"key"`
+	} `json:"lockSensor,omitempty"`
 }
 
 func (d *DeviceStatusResponse) UnmarshalJSON(bytes []byte) error {
