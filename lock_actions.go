@@ -72,8 +72,8 @@ func (l *LegacyLockEvent) MarshalJSON() ([]byte, error) {
 		state["recloseDelay"] = l.Reclose
 	}
 
-	return json.Marshal(map[string]any{
-		"state": map[eventType]any{
+	return json.Marshal(map[string]interface{}{
+		"state": map[eventType]interface{}{
 			l.State: state,
 		},
 	})
