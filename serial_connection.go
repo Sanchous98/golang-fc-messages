@@ -1,8 +1,6 @@
 package messages
 
-import (
-	"github.com/goccy/go-json"
-)
+import "github.com/goccy/go-json"
 
 const (
 	SerialConnectionRequestEventType  eventType = "serialConnectionReq"
@@ -15,6 +13,33 @@ const (
 )
 
 type serialConnectionAction string
+
+func (a *serialConnectionAction) UnmarshalJSON(bytes []byte) (err error) {
+	defer func() {
+		if a != nil {
+			switch *a {
+			case SerialConnectionActionStart, SerialConnectionActionReset:
+			default:
+				err = InvalidSerialConnectionAction{*a}
+			}
+		}
+	}()
+
+	err = json.Unmarshal(bytes, (*string)(a))
+	return
+}
+
+func (a *serialConnectionAction) MarshalJSON() ([]byte, error) {
+	if a != nil {
+		switch *a {
+		case SerialConnectionActionStart, SerialConnectionActionReset:
+		default:
+			return nil, InvalidSerialConnectionAction{*a}
+		}
+	}
+
+	return json.Marshal((*string)(a))
+}
 
 type SerialConnectionRequest struct {
 	TransactionId uint32                 `json:"-"`
@@ -39,24 +64,12 @@ func (s *SerialConnectionRequest) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	switch s.Action {
-	case SerialConnectionActionStart, SerialConnectionActionReset:
-	default:
-		return InvalidSerialConnectionAction{s.Action}
-	}
-
 	s.TransactionId = e.TransactionId
 
 	return nil
 }
 
 func (s *SerialConnectionRequest) MarshalJSON() ([]byte, error) {
-	switch s.Action {
-	case SerialConnectionActionStart, SerialConnectionActionReset:
-	default:
-		return nil, &InvalidSerialConnectionAction{s.Action}
-	}
-
 	type serialConnectionRequest SerialConnectionRequest
 
 	var e event

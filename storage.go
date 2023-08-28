@@ -20,9 +20,29 @@ const (
 	StorageResponseStatusErrorKeyAlreadyExists
 	StorageResponseStatusErrorFlashStorageFull
 	StorageResponseStatusErrorCritical
+	_maxStorageResponseStatus = iota - 1
 )
 
 type storageResponseStatus uint8
+
+func (s *storageResponseStatus) UnmarshalJSON(bytes []byte) (err error) {
+	defer func() {
+		if s != nil && *s < 0 || *s > _maxStorageResponseStatus {
+			err = InvalidStorageResponseStatus{*s}
+		}
+	}()
+
+	err = json.Unmarshal(bytes, (*uint8)(s))
+	return
+}
+
+func (s *storageResponseStatus) MarshalJSON() ([]byte, error) {
+	if s != nil && *s < 0 || *s > _maxStorageResponseStatus {
+		return nil, InvalidStorageResponseStatus{*s}
+	}
+
+	return json.Marshal((*uint8)(s))
+}
 
 type MasterKey struct {
 	ChannelIds []int `json:"channelIds,omitempty"`
@@ -64,24 +84,10 @@ func (s *StorageData) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	switch s.Status {
-	case StorageResponseStatusOk, StorageResponseStatusReadOk, StorageResponseStatusErrorKeyNotFound,
-		StorageResponseStatusErrorKeyAlreadyExists, StorageResponseStatusErrorFlashStorageFull, StorageResponseStatusErrorCritical:
-	default:
-		return InvalidStorageResponseStatus{s.Status}
-	}
-
 	return nil
 }
 
 func (s *StorageData) MarshalJSON() ([]byte, error) {
-	switch s.Status {
-	case StorageResponseStatusOk, StorageResponseStatusReadOk, StorageResponseStatusErrorKeyNotFound,
-		StorageResponseStatusErrorKeyAlreadyExists, StorageResponseStatusErrorFlashStorageFull, StorageResponseStatusErrorCritical:
-	default:
-		return nil, &InvalidStorageResponseStatus{s.Status}
-	}
-
 	type storageData StorageData
 
 	return json.Marshal((*storageData)(s))

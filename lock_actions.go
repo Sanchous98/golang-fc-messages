@@ -1,8 +1,6 @@
 package messages
 
-import (
-	"github.com/goccy/go-json"
-)
+import "github.com/goccy/go-json"
 
 const (
 	LockActionOpenEventType      eventType = "lockActionOpen"
@@ -25,7 +23,45 @@ const (
 	OpenTimeoutLockStatus            lockStatus = "openTimeoutError"
 )
 
+var lockActionsPath *json.Path
+
+func init() {
+	var err error
+	lockActionsPath, err = json.CreatePath("$.payload.lockActionStatus")
+
+	if err != nil {
+		panic(err)
+	}
+}
+
 type lockStatus string
+
+func (s *lockStatus) UnmarshalJSON(bytes []byte) (err error) {
+	defer func() {
+		if s != nil {
+			switch *s {
+			case NoneLockStatus, ExtRelayStateLockStatus, LockOpenedLockStatus, LockClosedLockStatus, DriverOnLockStatus, ErrorLockAlreadyOpenLockStatus, ErrorLockAlreadyClosedLockStatus, ErrorDriverEnabledLockStatus, DeviceTypeUnknownLockStatus:
+			default:
+				err = InvalidLockStatus{*s}
+			}
+		}
+	}()
+
+	err = json.Unmarshal(bytes, (*string)(s))
+	return
+}
+
+func (s *lockStatus) MarshalJSON() ([]byte, error) {
+	if s != nil {
+		switch *s {
+		case NoneLockStatus, ExtRelayStateLockStatus, LockOpenedLockStatus, LockClosedLockStatus, DriverOnLockStatus, ErrorLockAlreadyOpenLockStatus, ErrorLockAlreadyClosedLockStatus, ErrorDriverEnabledLockStatus, DeviceTypeUnknownLockStatus:
+		default:
+			return nil, InvalidLockStatus{*s}
+		}
+	}
+
+	return json.Marshal((*string)(s))
+}
 
 type LockAuto struct {
 	TransactionId uint32 `json:"-"`
@@ -97,12 +133,6 @@ func (l *LockResponse) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	switch l.LockActionStatus {
-	case NoneLockStatus, ExtRelayStateLockStatus, LockOpenedLockStatus, LockClosedLockStatus, DriverOnLockStatus, ErrorLockAlreadyOpenLockStatus, ErrorLockAlreadyClosedLockStatus, ErrorDriverEnabledLockStatus, DeviceTypeUnknownLockStatus:
-	default:
-		return InvalidLockStatus{l.LockActionStatus}
-	}
-
 	l.TransactionId = e.TransactionId
 	l.ShortAddr = e.ShortAddr
 	l.ExtAddr = e.ExtAddr
@@ -112,12 +142,6 @@ func (l *LockResponse) UnmarshalJSON(bytes []byte) error {
 }
 
 func (l *LockResponse) MarshalJSON() ([]byte, error) {
-	switch l.LockActionStatus {
-	case NoneLockStatus, ExtRelayStateLockStatus, LockOpenedLockStatus, LockClosedLockStatus, DriverOnLockStatus, ErrorLockAlreadyOpenLockStatus, ErrorLockAlreadyClosedLockStatus, ErrorDriverEnabledLockStatus, DeviceTypeUnknownLockStatus:
-	default:
-		return nil, &InvalidLockStatus{l.LockActionStatus}
-	}
-
 	type lockResponse LockResponse
 
 	var e event
@@ -220,14 +244,8 @@ func (l *LockOffline) UnmarshalJSON(bytes []byte) error {
 		return e.EventType.Error()
 	}
 
-	path, err := json.CreatePath("$.payload.lockActionStatus")
-
-	if err != nil {
-		return err
-	}
-
 	var status lockStatus
-	if err := path.Unmarshal(e.Payload, &status); err != nil {
+	if err := lockActionsPath.Unmarshal(e.Payload, &status); err != nil {
 		return err
 	}
 

@@ -1,8 +1,6 @@
 package messages
 
-import (
-	"github.com/goccy/go-json"
-)
+import "github.com/goccy/go-json"
 
 const (
 	TransactionIdReq eventType = "transactionIdReq"
@@ -15,6 +13,33 @@ const (
 )
 
 type transactionIdAction string
+
+func (a *transactionIdAction) UnmarshalJSON(bytes []byte) (err error) {
+	defer func() {
+		if a != nil {
+			switch *a {
+			case TransactionActionRead, TransactionActionReset:
+			default:
+				err = InvalidTransactionIdAction{*a}
+			}
+		}
+	}()
+
+	err = json.Unmarshal(bytes, (*string)(a))
+	return
+}
+
+func (a *transactionIdAction) MarshalJSON() ([]byte, error) {
+	if a != nil {
+		switch *a {
+		case TransactionActionRead, TransactionActionReset:
+		default:
+			return nil, InvalidTransactionIdAction{*a}
+		}
+	}
+
+	return json.Marshal((*string)(a))
+}
 
 type TransactionIdAction struct {
 	Action transactionIdAction `json:"action"`
@@ -38,22 +63,10 @@ func (t *TransactionIdAction) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	switch t.Action {
-	case TransactionActionRead, TransactionActionReset:
-	default:
-		return InvalidTransactionIdAction{t.Action}
-	}
-
 	return nil
 }
 
 func (t *TransactionIdAction) MarshalJSON() ([]byte, error) {
-	switch t.Action {
-	case TransactionActionRead, TransactionActionReset:
-	default:
-		return nil, &InvalidTransactionIdAction{t.Action}
-	}
-
 	type tIdAction TransactionIdAction
 
 	var e event

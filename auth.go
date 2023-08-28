@@ -5,10 +5,6 @@ import (
 	"strings"
 )
 
-type authStatus string
-
-type authType string
-
 const AuthEventType eventType = "authEvent"
 
 const (
@@ -32,6 +28,66 @@ const (
 	NumPadType authType = "numPad"
 )
 
+type authStatus string
+
+func (s *authStatus) UnmarshalJSON(bytes []byte) (err error) {
+	defer func() {
+		if s != nil {
+			switch *s {
+			case NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus,
+				FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus:
+			default:
+				err = InvalidAuthStatus{*s}
+			}
+		}
+	}()
+
+	err = json.Unmarshal(bytes, (*string)(s))
+	return
+}
+
+func (s *authStatus) MarshalJSON() ([]byte, error) {
+	if s != nil {
+		switch *s {
+		case NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus,
+			FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus:
+		default:
+			return nil, InvalidAuthStatus{*s}
+		}
+	}
+
+	return json.Marshal((*string)(s))
+}
+
+type authType string
+
+func (t *authType) UnmarshalJSON(bytes []byte) (err error) {
+	defer func() {
+		if t != nil {
+			switch *t {
+			case NoneType, NFCType, QRType, MobileType, NumPadType:
+			default:
+				err = InvalidAuthType{*t}
+			}
+		}
+	}()
+
+	err = json.Unmarshal(bytes, (*string)(t))
+	return
+}
+
+func (t *authType) MarshalJSON() ([]byte, error) {
+	if t != nil {
+		switch *t {
+		case NoneType, NFCType, QRType, MobileType, NumPadType:
+		default:
+			return nil, InvalidAuthType{*t}
+		}
+	}
+
+	return json.Marshal((*string)(t))
+}
+
 type AuthRequest struct {
 	TransactionId uint32     `json:"-"`
 	HashKey       string     `json:"hashKey"`
@@ -41,41 +97,6 @@ type AuthRequest struct {
 	ChannelIds    []int      `json:"channelIds,omitempty"`
 }
 
-func (a *AuthRequest) MarshalJSON() ([]byte, error) {
-	type auth AuthRequest
-
-	switch a.AuthType {
-	case NoneType, NFCType, QRType, MobileType, NumPadType:
-	default:
-		return nil, InvalidAuthType{a.AuthType}
-	}
-
-	switch a.AuthStatus {
-	case NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus:
-	default:
-		return nil, InvalidAuthStatus{a.AuthStatus}
-	}
-
-	var e event
-	var err error
-
-	if !strings.HasPrefix(a.HashKey, "0x") {
-		return nil, InvalidHashKey{a.HashKey}
-	}
-
-	if strings.TrimLeft(a.HashKey, "0x") == "" {
-		return nil, InvalidHashKey{a.HashKey}
-	}
-
-	e.TransactionId = a.TransactionId
-	e.EventType = AuthEventType
-
-	if e.Payload, err = json.Marshal((*auth)(a)); err != nil {
-		return nil, err
-	}
-
-	return json.Marshal(&e)
-}
 func (a *AuthRequest) UnmarshalJSON(bytes []byte) error {
 	type auth AuthRequest
 
@@ -101,21 +122,33 @@ func (a *AuthRequest) UnmarshalJSON(bytes []byte) error {
 		return InvalidHashKey{a.HashKey}
 	}
 
-	switch a.AuthType {
-	case NoneType, NFCType, QRType, MobileType, NumPadType:
-	default:
-		return InvalidAuthType{a.AuthType}
-	}
-
-	switch a.AuthStatus {
-	case NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus:
-	default:
-		return InvalidAuthStatus{a.AuthStatus}
-	}
-
 	a.TransactionId = e.TransactionId
 
 	return nil
+}
+
+func (a *AuthRequest) MarshalJSON() ([]byte, error) {
+	type auth AuthRequest
+
+	var e event
+	var err error
+
+	if !strings.HasPrefix(a.HashKey, "0x") {
+		return nil, InvalidHashKey{a.HashKey}
+	}
+
+	if strings.TrimLeft(a.HashKey, "0x") == "" {
+		return nil, InvalidHashKey{a.HashKey}
+	}
+
+	e.TransactionId = a.TransactionId
+	e.EventType = AuthEventType
+
+	if e.Payload, err = json.Marshal((*auth)(a)); err != nil {
+		return nil, err
+	}
+
+	return json.Marshal(&e)
 }
 
 type AuthResponse struct {
@@ -155,18 +188,6 @@ func (a *AuthResponse) UnmarshalJSON(bytes []byte) error {
 		return InvalidHashKey{a.HashKey}
 	}
 
-	switch a.AuthType {
-	case NoneType, NFCType, QRType, MobileType, NumPadType:
-	default:
-		return InvalidAuthType{a.AuthType}
-	}
-
-	switch a.AuthStatus {
-	case NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus:
-	default:
-		return InvalidAuthStatus{a.AuthStatus}
-	}
-
 	a.TransactionId = r.TransactionId
 	a.ShortAddr = r.ShortAddr
 	a.ExtAddr = r.ExtAddr
@@ -176,18 +197,6 @@ func (a *AuthResponse) UnmarshalJSON(bytes []byte) error {
 }
 func (a *AuthResponse) MarshalJSON() ([]byte, error) {
 	type auth AuthResponse
-
-	switch a.AuthType {
-	case NoneType, NFCType, QRType, MobileType, NumPadType:
-	default:
-		return nil, InvalidAuthType{a.AuthType}
-	}
-
-	switch a.AuthStatus {
-	case NoneStatus, SuccessOfflineStatus, FailedOfflineStatus, FailedPrivacyStatus, VerifyOnlineStatus, FailedOnlineStatus, SuccessOnlineStatus, ErrorTimeNotSetStatus, NotFoundOfflineStatus, ErrorEncryptionStatus:
-	default:
-		return nil, InvalidAuthStatus{a.AuthStatus}
-	}
 
 	var r response
 	var err error

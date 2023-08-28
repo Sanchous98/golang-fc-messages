@@ -129,3 +129,33 @@ func (e InvalidConfigResponseStatus) Error() string {
 		ResponseStatusErrorNoReadAccess, ResponseStatusErrorNoWriteAccess,
 	})
 }
+
+type InvalidDeviceType struct {
+	Got deviceType
+}
+
+func (e InvalidDeviceType) Error() string {
+	return fmt.Sprintf("invalid device type \"%s\"! Expected %+q", e.Got, [...]deviceType{
+		DeviceTypeNone, DeviceTypeFCLock, DeviceTypeWallReader, DeviceTypeFCRelay,
+	})
+}
+
+type InvalidDeviceRole struct {
+	Got deviceRole
+}
+
+func (e InvalidDeviceRole) Error() string {
+	return fmt.Sprintf("invalid device role \"%s\"! Expected %+q", e.Got, [...]deviceRole{
+		DeviceRoleNone, DeviceRoleStandalone, DeviceRoleMaster, DeviceRoleSlave,
+	})
+}
+
+type InvalidBuzzerVolume struct {
+	Got buzzerVolume
+}
+
+func (e InvalidBuzzerVolume) Error() string {
+	return fmt.Sprintf("invalid device role \"%s\"! Expected %+q", e.Got, [...]buzzerVolume{
+		VolumeOff, VolumeMedium, VolumeMaximum,
+	})
+}

@@ -22,6 +22,35 @@ const (
 
 type firmwareUpgradeStatus string
 
+func (s *firmwareUpgradeStatus) UnmarshalJSON(bytes []byte) (err error) {
+	defer func() {
+		if s != nil {
+			switch *s {
+			case UpgradeSuccessStatus, UpgradeDeviceNotFoundStatus, UpgradeInvalidStateStatus,
+				UpgradeInvalidFileStatus, UpgradeInvalidFileIdStatus, UpgradeUnknownErrorStatus:
+			default:
+				err = InvalidFirmwareUpgradeStatus{*s}
+			}
+		}
+	}()
+
+	err = json.Unmarshal(bytes, (*string)(s))
+	return
+}
+
+func (s *firmwareUpgradeStatus) MarshalJSON() ([]byte, error) {
+	if s != nil {
+		switch *s {
+		case UpgradeSuccessStatus, UpgradeDeviceNotFoundStatus, UpgradeInvalidStateStatus,
+			UpgradeInvalidFileStatus, UpgradeInvalidFileIdStatus, UpgradeUnknownErrorStatus:
+		default:
+			return nil, InvalidFirmwareUpgradeStatus{*s}
+		}
+	}
+
+	return json.Marshal((*string)(s))
+}
+
 type FirmwareVersionRequest struct {
 	TransactionId uint32 `json:"-"`
 }
@@ -169,13 +198,6 @@ func (f *FirmwareVersionUpgradeResponse) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	switch f.Status {
-	case UpgradeSuccessStatus, UpgradeDeviceNotFoundStatus, UpgradeInvalidStateStatus,
-		UpgradeInvalidFileStatus, UpgradeInvalidFileIdStatus, UpgradeUnknownErrorStatus:
-	default:
-		return InvalidFirmwareUpgradeStatus{f.Status}
-	}
-
 	f.Rssi = r.Rssi
 	f.ExtAddr = r.ExtAddr
 	f.ShortAddr = r.ShortAddr
@@ -185,13 +207,6 @@ func (f *FirmwareVersionUpgradeResponse) UnmarshalJSON(bytes []byte) error {
 }
 
 func (f *FirmwareVersionUpgradeResponse) MarshalJSON() ([]byte, error) {
-	switch f.Status {
-	case UpgradeSuccessStatus, UpgradeDeviceNotFoundStatus, UpgradeInvalidStateStatus,
-		UpgradeInvalidFileStatus, UpgradeInvalidFileIdStatus, UpgradeUnknownErrorStatus:
-	default:
-		return nil, &InvalidFirmwareUpgradeStatus{f.Status}
-	}
-
 	var r response
 	var err error
 

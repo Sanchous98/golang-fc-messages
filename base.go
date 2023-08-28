@@ -1,8 +1,17 @@
 package messages
 
-import (
-	"github.com/goccy/go-json"
-)
+import "github.com/goccy/go-json"
+
+var eventPath *json.Path
+
+func init() {
+	var err error
+	eventPath, err = json.CreatePath("$.event")
+
+	if err != nil {
+		panic(err)
+	}
+}
 
 type eventType string
 
@@ -26,13 +35,8 @@ func (e *event) MarshalJSON() ([]byte, error) {
 
 func (e *event) UnmarshalJSON(bytes []byte) error {
 	type ev event
-	path, err := json.CreatePath("$.event")
 
-	if err != nil {
-		return err
-	}
-
-	values, err := path.Extract(bytes)
+	values, err := eventPath.Extract(bytes)
 
 	if err != nil {
 		return err
@@ -42,11 +46,7 @@ func (e *event) UnmarshalJSON(bytes []byte) error {
 		return nil
 	}
 
-	if err = json.Unmarshal(values[0], (*ev)(e)); err != nil {
-		return err
-	}
-
-	return nil
+	return json.Unmarshal(values[0], (*ev)(e))
 }
 
 type response struct {
@@ -71,13 +71,7 @@ func (r *response) MarshalJSON() ([]byte, error) {
 type eventResponse response
 
 func (e *eventResponse) UnmarshalJSON(bytes []byte) error {
-	path, err := json.CreatePath("$.event")
-
-	if err != nil {
-		return err
-	}
-
-	values, err := path.Extract(bytes)
+	values, err := eventPath.Extract(bytes)
 
 	if err != nil {
 		return err
@@ -87,11 +81,7 @@ func (e *eventResponse) UnmarshalJSON(bytes []byte) error {
 		return nil
 	}
 
-	if err = json.Unmarshal(values[0], (*response)(e)); err != nil {
-		return err
-	}
-
-	return nil
+	return json.Unmarshal(values[0], (*response)(e))
 }
 
 func (e *eventResponse) MarshalJSON() ([]byte, error) {

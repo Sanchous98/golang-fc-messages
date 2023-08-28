@@ -1,8 +1,6 @@
 package messages
 
-import (
-	"github.com/goccy/go-json"
-)
+import "github.com/goccy/go-json"
 
 const (
 	DeviceConfigReadEvent     eventType = "deviceConfigRead"
@@ -27,28 +25,163 @@ const (
 	ResponseStatusErrorNoWriteAccess configResponseStatus = "errorNoWriteAccess"
 )
 
+const (
+	DeviceTypeNone       deviceType = "none"
+	DeviceTypeFCLock     deviceType = "FullCloudLock"
+	DeviceTypeWallReader deviceType = "WallReader"
+	DeviceTypeFCRelay    deviceType = "FullCloudRelay"
+)
+
+const (
+	DeviceRoleNone       deviceRole = "none"
+	DeviceRoleStandalone deviceRole = "Standalone"
+	DeviceRoleMaster     deviceRole = "Master"
+	DeviceRoleSlave      deviceRole = "Slave"
+)
+
+const (
+	VolumeOff     buzzerVolume = "off"
+	VolumeMedium  buzzerVolume = "medium"
+	VolumeMaximum buzzerVolume = "maximum"
+)
+
+type deviceType string
+
+func (t *deviceType) UnmarshalJSON(bytes []byte) (err error) {
+	defer func() {
+		if t != nil {
+			switch *t {
+			case DeviceTypeNone, DeviceTypeFCLock, DeviceTypeWallReader, DeviceTypeFCRelay:
+			default:
+				err = InvalidDeviceType{*t}
+			}
+		}
+	}()
+
+	err = json.Unmarshal(bytes, (*string)(t))
+	return
+}
+
+func (t *deviceType) MarshalJSON() ([]byte, error) {
+	if t != nil {
+		switch *t {
+		case DeviceTypeNone, DeviceTypeFCLock, DeviceTypeWallReader, DeviceTypeFCRelay:
+		default:
+			return nil, InvalidDeviceType{*t}
+		}
+	}
+
+	return json.Marshal((*string)(t))
+}
+
+type deviceRole string
+
+func (r *deviceRole) UnmarshalJSON(bytes []byte) (err error) {
+	defer func() {
+		if r != nil {
+			switch *r {
+			case DeviceRoleNone, DeviceRoleStandalone, DeviceRoleMaster, DeviceRoleSlave:
+			default:
+				err = InvalidDeviceRole{*r}
+			}
+		}
+	}()
+
+	err = json.Unmarshal(bytes, (*string)(r))
+	return
+}
+
+func (r *deviceRole) MarshalJSON() ([]byte, error) {
+	if r != nil {
+		switch *r {
+		case DeviceRoleNone, DeviceRoleStandalone, DeviceRoleMaster, DeviceRoleSlave:
+		default:
+			return nil, InvalidDeviceRole{*r}
+		}
+	}
+
+	return json.Marshal((*string)(r))
+}
+
 type configResponseStatus string
 
+func (r *configResponseStatus) UnmarshalJSON(bytes []byte) (err error) {
+	defer func() {
+		if r != nil {
+			switch *r {
+			case ResponseStatusNone, ResponseStatusCreateOK, ResponseStatusReadOK, ResponseStatusUpdateOK, ResponseStatusDeleteOK,
+				ResponseStatusConfigSizeError, ResponseStatusError, ResponseStatusErrorOutOfRange, ResponseStatusErrorNotFound,
+				ResponseStatusErrorFlash, ResponseStatusErrorNoCallBack, ResponseStatusErrorNoSpace, ResponseStatusErrorNoReadAccess,
+				ResponseStatusErrorNoWriteAccess:
+			default:
+				err = InvalidConfigResponseStatus{*r}
+			}
+		}
+	}()
+
+	err = json.Unmarshal(bytes, (*string)(r))
+	return
+}
+
+func (r *configResponseStatus) MarshalJSON() ([]byte, error) {
+	if r != nil {
+		switch *r {
+		case ResponseStatusNone, ResponseStatusCreateOK, ResponseStatusReadOK, ResponseStatusUpdateOK, ResponseStatusDeleteOK,
+			ResponseStatusConfigSizeError, ResponseStatusError, ResponseStatusErrorOutOfRange, ResponseStatusErrorNotFound,
+			ResponseStatusErrorFlash, ResponseStatusErrorNoCallBack, ResponseStatusErrorNoSpace, ResponseStatusErrorNoReadAccess,
+			ResponseStatusErrorNoWriteAccess:
+		default:
+			return nil, InvalidConfigResponseStatus{*r}
+		}
+	}
+
+	return json.Marshal((*string)(r))
+}
+
+type buzzerVolume string
+
+func (v *buzzerVolume) UnmarshalJSON(bytes []byte) (err error) {
+	defer func() {
+		if v != nil {
+			switch *v {
+			case VolumeOff, VolumeMedium, VolumeMaximum:
+			default:
+				err = InvalidBuzzerVolume{*v}
+			}
+		}
+	}()
+
+	err = json.Unmarshal(bytes, (*string)(v))
+	return
+}
+
+func (v *buzzerVolume) MarshalJSON() ([]byte, error) {
+	if v != nil {
+		switch *v {
+		case VolumeOff, VolumeMedium, VolumeMaximum:
+		default:
+			return nil, InvalidBuzzerVolume{*v}
+		}
+	}
+
+	return json.Marshal((*string)(v))
+}
+
 type UpdateConfig struct {
-	TransactionId uint32  `json:"-"`
-	TxPower       *uint   `json:"txPower,omitempty"`
-	DeviceType    *string `json:"deviceType,omitempty"`
-	DeviceRole    *string `json:"deviceRole,omitempty"`
-	//FrontBreakout           string   `json:"frontBreakout,omitempty"`
-	//BackBreakout            string   `json:"backBreakout,omitempty"`
-	RecloseDelay            *uint   `json:"recloseDelay,omitempty"`
-	StatusMsgFlags          *uint   `json:"statusMsgFlags,omitempty"`
-	StatusUpdateInterval    *uint16 `json:"statusUpdateInterval,omitempty"`
-	NfcPiccEncryptionKey    *string `json:"nfcPiccEncryptionKey,omitempty"`
-	NfcEncryptionKey        *string `json:"nfcEncryptionKey,omitempty"`
-	InstalledRelayModuleIds []uint  `json:"installedRelayModuleIds,omitempty"`
-	ExternalRelayMode       *string `json:"externalRelayMode,omitempty"`
-	SlaveFwAddress          *uint   `json:"slaveFwAddress,omitempty"`
-	BuzzerVolume            *string `json:"buzzerVolume,omitempty"`
-	EmvCoPrivateKey         *string `json:"emvCoPrivateKey,omitempty"`
-	EmvCoKeyVersion         *string `json:"emvCoKeyVersion,omitempty"`
-	EmvCoCollectorId        *string `json:"emvCoCollectorId,omitempty"`
-	GoogleSmartTapEnabled   *bool   `json:"googleSmartTapEnabled,omitempty"`
+	TransactionId           uint32        `json:"-"`
+	TxPower                 *uint         `json:"txPower,omitempty"`
+	RecloseDelay            *uint         `json:"recloseDelay,omitempty"`
+	StatusMsgFlags          *uint         `json:"statusMsgFlags,omitempty"`
+	StatusUpdateInterval    *uint16       `json:"statusUpdateInterval,omitempty"`
+	NfcEncryptionKey        *string       `json:"nfcEncryptionKey,omitempty"`
+	InstalledRelayModuleIds []uint        `json:"installedRelayModuleIds,omitempty"`
+	ExternalRelayMode       *string       `json:"externalRelayMode,omitempty"`
+	SlaveFwAddress          *uint         `json:"slaveFwAddress,omitempty"`
+	BuzzerVolume            *buzzerVolume `json:"buzzerVolume,omitempty"`
+	EmvCoPrivateKey         *string       `json:"emvCoPrivateKey,omitempty"`
+	EmvCoKeyVersion         *string       `json:"emvCoKeyVersion,omitempty"`
+	EmvCoCollectorId        *string       `json:"emvCoCollectorId,omitempty"`
+	GoogleSmartTapEnabled   *bool         `json:"googleSmartTapEnabled,omitempty"`
 }
 
 func (r *UpdateConfig) UnmarshalJSON(bytes []byte) error {
@@ -91,29 +224,26 @@ func (r *UpdateConfig) MarshalJSON() ([]byte, error) {
 }
 
 type ConfigResponse struct {
-	ShortAddr            string               `json:"-"`
-	ExtAddr              string               `json:"-"`
-	Rssi                 int                  `json:"-"`
-	TransactionId        uint32               `json:"-"`
-	Status               configResponseStatus `json:"status"`
-	TxPower              *uint                `json:"txPower,omitempty"`
-	DeviceType           *string              `json:"deviceType,omitempty"`
-	DeviceRole           *string              `json:"deviceRole,omitempty"`
-	FrontBreakout        *string              `json:"frontBreakout,omitempty"`
-	BackBreakout         *string              `json:"backBreakout,omitempty"`
-	RecloseDelay         *uint                `json:"recloseDelay,omitempty"`
-	StatusMsgFlags       *uint                `json:"statusMsgFlags,omitempty"`
-	StatusUpdateInterval *uint16              `json:"statusUpdateInterval,omitempty"`
-	//NfcPiccEncryptionKey    [16]byte `json:"nfcPiccEncryptionKey,omitempty"`
-	//NfcEncryptionKey        [16]byte `json:"nfcEncryptionKey,omitempty"`
-	InstalledRelayModuleIds []uint  `json:"installedRelayModuleIds,omitempty"`
-	ExternalRelayMode       *string `json:"externalRelayMode,omitempty"`
-	SlaveFwAddress          *uint   `json:"slaveFwAddress,omitempty"`
-	BuzzerVolume            *string `json:"buzzerVolume,omitempty"`
-	//EmvCoPrivateKey         string `json:"emvCoPrivateKey,omitempty"`
-	EmvCoKeyVersion       *string `json:"emvCoKeyVersion,omitempty"`
-	EmvCoCollectorId      *string `json:"emvCoCollectorId,omitempty"`
-	GoogleSmartTapEnabled *bool   `json:"googleSmartTapEnabled,omitempty"`
+	ShortAddr               string               `json:"-"`
+	ExtAddr                 string               `json:"-"`
+	Rssi                    int                  `json:"-"`
+	TransactionId           uint32               `json:"-"`
+	Status                  configResponseStatus `json:"status"`
+	TxPower                 *uint                `json:"txPower,omitempty"`
+	DeviceType              *deviceType          `json:"deviceType,omitempty"`
+	DeviceRole              *deviceRole          `json:"deviceRole,omitempty"`
+	FrontBreakout           *string              `json:"frontBreakout,omitempty"`
+	BackBreakout            *string              `json:"backBreakout,omitempty"`
+	RecloseDelay            *uint                `json:"recloseDelay,omitempty"`
+	StatusMsgFlags          *uint                `json:"statusMsgFlags,omitempty"`
+	StatusUpdateInterval    *uint16              `json:"statusUpdateInterval,omitempty"`
+	InstalledRelayModuleIds []uint               `json:"installedRelayModuleIds,omitempty"`
+	ExternalRelayMode       *string              `json:"externalRelayMode,omitempty"`
+	SlaveFwAddress          *uint                `json:"slaveFwAddress,omitempty"`
+	BuzzerVolume            *buzzerVolume        `json:"buzzerVolume,omitempty"`
+	EmvCoKeyVersion         *string              `json:"emvCoKeyVersion,omitempty"`
+	EmvCoCollectorId        *string              `json:"emvCoCollectorId,omitempty"`
+	GoogleSmartTapEnabled   *bool                `json:"googleSmartTapEnabled,omitempty"`
 }
 
 func (r *ConfigResponse) UnmarshalJSON(bytes []byte) error {
@@ -134,15 +264,6 @@ func (r *ConfigResponse) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	switch r.Status {
-	case ResponseStatusNone, ResponseStatusCreateOK, ResponseStatusReadOK, ResponseStatusUpdateOK, ResponseStatusDeleteOK,
-		ResponseStatusConfigSizeError, ResponseStatusError, ResponseStatusErrorOutOfRange, ResponseStatusErrorNotFound,
-		ResponseStatusErrorFlash, ResponseStatusErrorNoCallBack, ResponseStatusErrorNoSpace, ResponseStatusErrorNoReadAccess,
-		ResponseStatusErrorNoWriteAccess:
-	default:
-		return InvalidConfigResponseStatus{r.Status}
-	}
-
 	r.TransactionId = e.TransactionId
 	r.ShortAddr = e.ShortAddr
 	r.ExtAddr = e.ExtAddr
@@ -152,15 +273,6 @@ func (r *ConfigResponse) UnmarshalJSON(bytes []byte) error {
 }
 
 func (r *ConfigResponse) MarshalJSON() ([]byte, error) {
-	switch r.Status {
-	case ResponseStatusNone, ResponseStatusCreateOK, ResponseStatusReadOK, ResponseStatusUpdateOK, ResponseStatusDeleteOK,
-		ResponseStatusConfigSizeError, ResponseStatusError, ResponseStatusErrorOutOfRange, ResponseStatusErrorNotFound,
-		ResponseStatusErrorFlash, ResponseStatusErrorNoCallBack, ResponseStatusErrorNoSpace, ResponseStatusErrorNoReadAccess,
-		ResponseStatusErrorNoWriteAccess:
-	default:
-		return nil, InvalidConfigResponseStatus{r.Status}
-	}
-
 	type configResponse ConfigResponse
 
 	var e response

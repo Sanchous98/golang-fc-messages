@@ -1,15 +1,11 @@
 package messages
 
-import (
-	"github.com/goccy/go-json"
-)
+import "github.com/goccy/go-json"
 
 const (
 	DeviceStatusRequestEvent  eventType = "deviceStatusReq"
 	DeviceStatusResponseEvent eventType = "deviceStatusRsp"
 )
-
-type deviceStatusReason string
 
 const (
 	NoneReason            deviceStatusReason = "none"
@@ -18,6 +14,35 @@ const (
 	StatusChangeReason    deviceStatusReason = "statusChange"
 	ErrorDetectedReason   deviceStatusReason = "errorDetected"
 )
+
+type deviceStatusReason string
+
+func (r *deviceStatusReason) UnmarshalJSON(bytes []byte) (err error) {
+	defer func() {
+		if r != nil {
+			switch *r {
+			case NoneReason, CloudRequestedReason, ScheduledUpdateReason, StatusChangeReason, ErrorDetectedReason:
+			default:
+				err = InvalidDeviceStatusReason{*r}
+			}
+		}
+	}()
+
+	err = json.Unmarshal(bytes, (*string)(r))
+	return
+}
+
+func (r *deviceStatusReason) MarshalJSON() ([]byte, error) {
+	if r != nil {
+		switch *r {
+		case NoneReason, CloudRequestedReason, ScheduledUpdateReason, StatusChangeReason, ErrorDetectedReason:
+		default:
+			return nil, InvalidDeviceStatusReason{*r}
+		}
+	}
+
+	return json.Marshal((*string)(r))
+}
 
 type DeviceStatusRequest struct {
 	TransactionId uint32
@@ -85,12 +110,6 @@ func (d *DeviceStatusResponse) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	switch d.Reason {
-	case NoneReason, CloudRequestedReason, ScheduledUpdateReason, StatusChangeReason, ErrorDetectedReason:
-	default:
-		return InvalidDeviceStatusReason{d.Reason}
-	}
-
 	d.TransactionId = e.TransactionId
 	d.ShortAddr = e.ShortAddr
 	d.ExtAddr = e.ExtAddr
@@ -100,12 +119,6 @@ func (d *DeviceStatusResponse) UnmarshalJSON(bytes []byte) error {
 }
 
 func (d *DeviceStatusResponse) MarshalJSON() ([]byte, error) {
-	switch d.Reason {
-	case NoneReason, CloudRequestedReason, ScheduledUpdateReason, StatusChangeReason, ErrorDetectedReason:
-	default:
-		return nil, &InvalidDeviceStatusReason{d.Reason}
-	}
-
 	type deviceStatusResponse DeviceStatusResponse
 
 	var e response

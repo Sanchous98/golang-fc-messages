@@ -12,12 +12,39 @@ const (
 	RemoveDeviceResponseEventType  eventType = "removeDeviceRsp"
 )
 
-type networkAction string
-
 const (
 	NetworkOpenAction  networkAction = "open"
 	NetworkCloseAction networkAction = "close"
 )
+
+type networkAction string
+
+func (a *networkAction) UnmarshalJSON(bytes []byte) (err error) {
+	defer func() {
+		if a != nil {
+			switch *a {
+			case NetworkOpenAction, NetworkCloseAction:
+			default:
+				err = InvalidNetworkAction{*a}
+			}
+		}
+	}()
+
+	err = json.Unmarshal(bytes, (*string)(a))
+	return
+}
+
+func (a *networkAction) MarshalJSON() ([]byte, error) {
+	if a != nil {
+		switch *a {
+		case NetworkOpenAction, NetworkCloseAction:
+		default:
+			return nil, InvalidNetworkAction{*a}
+		}
+	}
+
+	return json.Marshal((*string)(a))
+}
 
 type GetNetworkInfo struct {
 	TransactionId uint32
@@ -92,24 +119,12 @@ func (u *UpdateNetworkState) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	switch u.Action {
-	case NetworkOpenAction, NetworkCloseAction:
-	default:
-		return InvalidNetworkAction{u.Action}
-	}
-
 	u.TransactionId = e.TransactionId
 
 	return nil
 }
 
 func (u *UpdateNetworkState) MarshalJSON() ([]byte, error) {
-	switch u.Action {
-	case NetworkOpenAction, NetworkCloseAction:
-	default:
-		return nil, &InvalidNetworkAction{u.Action}
-	}
-
 	var e event
 	var err error
 
