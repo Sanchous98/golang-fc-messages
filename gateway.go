@@ -93,6 +93,7 @@ type GetNetworkInfoResponse struct {
 	SecurityEnabled int      `json:"security_enabled"`
 	Mode            string   `json:"mode"`
 	State           string   `json:"state"`
+	FwVersion       string   `json:"fw_version"`
 	Devices         []Device `json:"devices"`
 }
 
