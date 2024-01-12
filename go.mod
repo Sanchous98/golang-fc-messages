@@ -1,4 +1,4 @@
-module bitbucket.org/4suites/golang-fc-messages/v2
+module github.com/Sanchous98/golang-fc-messages/v2
 
 go 1.12
 
